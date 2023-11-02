@@ -1,6 +1,7 @@
-import express, { Application, Request, Response } from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
+import  { Application, Request, Response } from 'express';
+const express = require('express');
+const bodyParser =  require('body-parser');
+const cors = require ('cors');
 import db from './app/models';
 
 
