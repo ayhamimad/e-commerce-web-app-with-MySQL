@@ -1,4 +1,5 @@
 import { DataTypes, Sequelize } from 'sequelize';
+
 import productModel from './products.model';
 
 const brandModel = (sequelize: Sequelize) => {
@@ -19,3 +20,4 @@ Brand.hasMany(productModel(sequelize), {
 return Brand;
 }
 export default brandModel;
+
