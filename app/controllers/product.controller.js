@@ -41,50 +41,61 @@ var models_1 = require("../models");
 var sequelize_1 = require("sequelize");
 var Brand = models_1.default.brand;
 var Product = models_1.default.product;
-//import productModel from '../models/products.model'; //
-//import brandModel from '../models/brands.model'; // 
 var search = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var search_term, brandSearch, productsInBrand, productDetails, error_1;
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var search_term, resultsPerPage, page, brandSearch, _a, count, rows, totalPages, productDetails, error_1;
+    var _b, _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                _c.trys.push([0, 6, , 7]);
+                _d.trys.push([0, 6, , 7]);
                 search_term = req.query.search_term;
+                resultsPerPage = 9;
+                page = parseInt(req.query.page, 10) || 1;
                 return [4 /*yield*/, Brand.findOne({
                         where: {
-                            name: (_a = {}, _a[sequelize_1.Op.like] = "%".concat(search_term, "%"), _a), // Use Op.like for a case-insensitive search
+                            name: (_b = {}, _b[sequelize_1.Op.like] = "%".concat(search_term, "%"), _b), // Use Op.like for a case-insensitive search
                         },
                     })];
             case 1:
-                brandSearch = _c.sent();
+                brandSearch = _d.sent();
                 if (!brandSearch) return [3 /*break*/, 3];
-                return [4 /*yield*/, Product.findAll({
+                return [4 /*yield*/, Product.findAndCountAll({
                         where: {
-                            brandID: brandSearch.id, // Modify to use the brand name
+                            brandID: brandSearch.id,
                         },
+                        offset: (page - 1) * resultsPerPage,
+                        limit: resultsPerPage,
                     })];
             case 2:
-                productsInBrand = _c.sent();
-                res.json(productsInBrand);
+                _a = _d.sent(), count = _a.count, rows = _a.rows;
+                totalPages = Math.ceil(count / resultsPerPage);
+                res.json({
+                    results: rows,
+                    pagination: {
+                        currentPage: page,
+                        totalPages: totalPages,
+                        resultsPerPage: resultsPerPage,
+                        totalResults: count,
+                    },
+                });
                 return [3 /*break*/, 5];
             case 3: return [4 /*yield*/, Product.findOne({
                     where: {
-                        name: (_b = {}, _b[sequelize_1.Op.like] = "%".concat(search_term, "%"), _b), // Use Op.like for a case-insensitive search
+                        name: (_c = {}, _c[sequelize_1.Op.like] = "%".concat(search_term, "%"), _c), // Use Op.like for a case-insensitive search
                     },
                 })];
             case 4:
-                productDetails = _c.sent();
+                productDetails = _d.sent();
                 if (productDetails) {
                     res.json(productDetails);
                 }
                 else {
                     res.json({ message: 'No matching products found.' });
                 }
-                _c.label = 5;
+                _d.label = 5;
             case 5: return [3 /*break*/, 7];
             case 6:
-                error_1 = _c.sent();
+                error_1 = _d.sent();
                 console.error('Error:', error_1);
                 res.status(500).json({ error: 'Internal Server Error' });
                 return [3 /*break*/, 7];
