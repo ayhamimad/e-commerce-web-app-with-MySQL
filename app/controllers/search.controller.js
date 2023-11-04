@@ -49,7 +49,7 @@ var search = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 0:
                 _d.trys.push([0, 6, , 7]);
                 search_term = req.query.search_term;
-                resultsPerPage = 9;
+                resultsPerPage = 12;
                 page = parseInt(req.query.page, 10) || 1;
                 return [4 /*yield*/, Brand.findOne({
                         where: {
