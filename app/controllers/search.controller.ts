@@ -6,7 +6,7 @@ const Product = db.product;
 export const  search = async (req: Request, res: Response) => {
     try {
       const search_term = req.query.search_term as string;
-      const resultsPerPage = 9; // Set the number of results to display per page
+      const resultsPerPage = 12; // Set the number of results to display per page
       const page = parseInt(req.query.page as string, 10) || 1; // Get the page number, default to 1 if not provided
 
 
