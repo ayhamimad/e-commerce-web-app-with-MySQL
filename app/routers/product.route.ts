@@ -1,8 +1,10 @@
 const express = require('express');
 import { Request, Response } from 'express';
 const router = express.Router();
-import * as productController from "../controllers/product.controller";
+import * as searchController from "../controllers/search.controller";
 
-router.get('/search',productController.search);
+router.get('/search',searchController.search);
+//router.get('/products',productController.search);
+
 
 export default router;
