@@ -10,9 +10,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 models_1.default.sequelize.sync();
-// app.get('/', (req: Request, res: Response) => {
-//     res.json({ message: 'welcome!!!!' });
-// });
 app.use('/api/v1/products', product_route_1.default);
 var Port = process.env.PORT || 3000;
 app.listen(Port, function () {

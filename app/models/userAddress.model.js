@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var sequelize_1 = require("sequelize");
-var order_model_1 = require("./order.model");
 var userAddressModel = function (sequelize) {
     var Address = sequelize.define('user_address', {
         user_id: {
@@ -28,9 +27,9 @@ var userAddressModel = function (sequelize) {
             allowNull: false,
         },
     });
-    Address.hasMany((0, order_model_1.default)(sequelize), {
-        foreignKey: "address_id"
-    });
+    // Address.hasMany(orderModel(sequelize),{
+    //   foreignKey: "address_id"
+    // })
     return Address;
 };
 exports.default = userAddressModel;

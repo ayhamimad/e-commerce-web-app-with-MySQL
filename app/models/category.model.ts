@@ -2,7 +2,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import productModel from './products.model';
 
-const categorydModel = (sequelize: Sequelize) => {
+const categoryModel = (sequelize: Sequelize) => {
 const Category = sequelize.define('category', {
   name: {
     type: DataTypes.STRING,
@@ -20,4 +20,4 @@ Category.hasMany(productModel(sequelize), {
   });
   return Category;
 }
-export default categorydModel;
+export default categoryModel;

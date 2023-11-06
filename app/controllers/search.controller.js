@@ -69,7 +69,7 @@ var search = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 2:
                 _a = _d.sent(), count = _a.count, rows = _a.rows;
                 totalPages = Math.ceil(count / resultsPerPage);
-                res.json({
+                res.status(200).json({
                     results: rows,
                     pagination: {
                         currentPage: page,
@@ -87,10 +87,10 @@ var search = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 4:
                 productDetails = _d.sent();
                 if (productDetails) {
-                    res.json(productDetails);
+                    res.status(200).json(productDetails);
                 }
                 else {
-                    res.json({ message: 'No matching products found.' });
+                    res.status(404).json({ message: 'No matching products found.' });
                 }
                 _d.label = 5;
             case 5: return [3 /*break*/, 7];

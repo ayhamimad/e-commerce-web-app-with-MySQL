@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var sequelize_1 = require("sequelize");
-var reviews_model_1 = require("./reviews.model");
-var orderItem_model_1 = require("./orderItem.model");
 var productModel = function (sequelize) {
     var Product = sequelize.define('product', {
         name: {
@@ -47,12 +45,12 @@ var productModel = function (sequelize) {
             allowNull: false,
         },
     });
-    Product.hasMany((0, orderItem_model_1.default)(sequelize), {
-        foreignKey: "productID"
-    });
-    Product.hasMany((0, reviews_model_1.default)(sequelize), {
-        foreignKey: "product_id"
-    });
+    // Product.hasMany(orderItemModel(sequelize), {
+    //   foreignKey: "productID",
+    // });
+    // Product.hasMany(reviewsModel(sequelize), {
+    //   foreignKey: "product_id",
+    // });
     return Product;
 };
 exports.default = productModel;

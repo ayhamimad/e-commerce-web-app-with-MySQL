@@ -2,10 +2,9 @@ import { DataTypes, Sequelize } from 'sequelize';
 import reviewsModel from './reviews.model';
 import orderModel from './order.model';
 import userAddressModel from './userAddress.model';
+
 const userModel = (sequelize: Sequelize) => {
-
-
-const User = sequelize.define('user', {
+  const User = sequelize.define('user', {
     first_name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -28,16 +27,20 @@ const User = sequelize.define('user', {
       allowNull: false,
     },
   });
-  User.hasMany(reviewsModel(sequelize),{
-    foreignKey: "user_id"
-  });
-  User.hasMany(orderModel(sequelize),{
-    foreignKey: "user_id"
-  });
-  User.hasMany(userAddressModel(sequelize),{
-    foreignKey: "user_id"
-  });
+
+  // User.hasMany(reviewsModel(sequelize), {
+  //   foreignKey: "user_id",
+  // });
+
+  // User.hasMany(orderModel(sequelize), {
+  //   foreignKey: "user_id",
+  // });
+
+  // User.hasMany(userAddressModel(sequelize), {
+  //   foreignKey: "user_id",
+  // });
+
   return User;
-}
-  export default userModel;
-  
+};
+
+export default userModel;

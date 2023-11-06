@@ -28,7 +28,7 @@ export const  search = async (req: Request, res: Response) => {
       });
       const totalPages = Math.ceil(count / resultsPerPage);// if if 5/2 = 2.5 if will make it 3 
 
-      res.json({
+      res.status(200).json({
         results: rows,
         pagination: {
           currentPage: page, // Set the current page
@@ -47,9 +47,9 @@ export const  search = async (req: Request, res: Response) => {
         });
         
         if (productDetails) {
-          res.json(productDetails);
+          res.status(200).json(productDetails);
         } else {
-          res.json({ message: 'No matching products found.' });
+          res.status(404).json({ message: 'No matching products found.' });
         }
       }
     } catch (error) {

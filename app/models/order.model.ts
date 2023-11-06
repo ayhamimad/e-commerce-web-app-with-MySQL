@@ -1,12 +1,10 @@
 import { DataTypes, Sequelize } from 'sequelize';
-
 import userModel from './user.model';
-import  userAddressModel  from "./userAddress.model";
+import userAddressModel from './userAddress.model';
 import orderItemModel from './orderItem.model';
 
 const orderModel = (sequelize: Sequelize) => {
-
-const Order = sequelize.define('order', {
+  const Order = sequelize.define('order', {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -28,10 +26,20 @@ const Order = sequelize.define('order', {
       allowNull: false,
     },
   });
-  Order.hasMany(orderItemModel(sequelize), {
-    foreignKey: 'orderID', // This should match the foreign key in the Product model
+
+  // Order.hasMany(orderItemModel(sequelize), {
+  //   foreignKey: 'orderID',
+  // });
+
+  Order.belongsTo(userModel(sequelize), {
+    foreignKey: 'user_id',
   });
+
+  Order.belongsTo(userAddressModel(sequelize), {
+    foreignKey: 'address_id',
+  });
+
   return Order;
-}
+};
 
 export default orderModel;
