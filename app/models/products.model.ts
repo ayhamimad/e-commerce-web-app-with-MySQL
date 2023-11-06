@@ -33,7 +33,7 @@ const productModel = (sequelize: Sequelize) => {
       allowNull: false,
     },
     rate: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10,2),
       allowNull: false,
     },
     discount: {

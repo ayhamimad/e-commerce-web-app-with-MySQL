@@ -12,7 +12,7 @@ var reviewsModel = function (sequelize) {
             type: sequelize_1.DataTypes.INTEGER,
         },
         rating: {
-            type: sequelize_1.DataTypes.DECIMAL,
+            type: sequelize_1.DataTypes.DECIMAL(10, 2),
         },
         description: {
             type: sequelize_1.DataTypes.STRING,

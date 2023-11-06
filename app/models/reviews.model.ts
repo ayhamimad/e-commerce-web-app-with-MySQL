@@ -11,7 +11,7 @@ const reviewsModel = (sequelize: Sequelize) => {
       type: DataTypes.INTEGER,
     },
     rating: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10,2),
     },
     description: {
       type: DataTypes.STRING,
