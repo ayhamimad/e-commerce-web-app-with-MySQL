@@ -11,7 +11,7 @@ export const list = async (req: Request, res: Response) => {
         const page = parseInt(req.query.page as string, 10) || 1; // Get the page number, default to 1 if not provided
 
         
-        const { new_arrival, category, handpicked, brand } = req.query;
+        const { new_arrival, category, handpicked, brand, search_term } = req.query;
 
         // Assuming you have an array of products stored in a variable called 'products'
         // Filter products based on query parameters
@@ -44,6 +44,7 @@ export const list = async (req: Request, res: Response) => {
                   });
           }
         
+
           if (category) {
             const categoryName = req.query.category as string;
             const categorySearch = await Category.findOne({
@@ -129,7 +130,56 @@ export const list = async (req: Request, res: Response) => {
                 },
               });
           }
-        
+          
+          // const resultsPerPage = 12; // Set the number of results to display per page
+          // const page = parseInt(req.query.page as string, 10) || 1; // Get the page number, default to 1 if not provided
+    
+          if(search_term){
+          const search_termName = req.query.search_term as string;
+          // Check if it's a brand search by name
+          const brandSearch = await Brand.findOne({
+            where: {
+              name: { [Op.like]: `%${search_termName}%` }, // Use Op.like for a case-insensitive search
+            },
+          });
+    
+          if (brandSearch) {
+            // If it's a brand search, send products in that brand
+          const { count, rows } = await Product.findAndCountAll({
+            where: {
+              brandID: brandSearch.id,
+            },
+            offset: (page - 1) * resultsPerPage,
+            limit: resultsPerPage,
+          });
+          const totalPages = Math.ceil(count / resultsPerPage);// if if 5/2 = 2.5 if will make it 3 
+    
+          res.status(200).json({
+            results: rows,
+            pagination: {
+              currentPage: page, // Set the current page
+              totalPages: totalPages,
+              resultsPerPage: resultsPerPage,
+              totalResults: count,
+            },
+          });
+    
+          } else {
+            // Otherwise, search for the product details by name
+            const productDetails = await Product.findOne({
+              where: {
+                name: { [Op.like]: `%${search_term}%` }, // Use Op.like for a case-insensitive search
+              },
+            });
+            
+            if (productDetails) {
+              res.status(200).json(productDetails);
+            } else {
+              res.status(404).json({ message: 'No matching products found.' });
+            }
+          }            
+        }
+
 
     }catch(err){
         console.error('Error:', err);

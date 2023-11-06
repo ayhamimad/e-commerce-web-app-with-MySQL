@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.productReviews = exports.productInfo = void 0;
+exports.productReviews = exports.productRelated = exports.productInfo = void 0;
 var models_1 = require("../models");
 var sequelize_1 = require("sequelize");
 var Product = models_1.default.product;
@@ -89,9 +89,38 @@ var productInfo = function (req, res) { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.productInfo = productInfo;
+var productRelated = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var randomProducts, error_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, Product.findAll({
+                        order: models_1.default.sequelize.random(),
+                        limit: 5,
+                    })];
+            case 1:
+                randomProducts = _a.sent();
+                if (randomProducts.length > 0) {
+                    res.status(200).json(randomProducts);
+                }
+                else {
+                    res.status(404).json({ message: "No products found" });
+                }
+                return [3 /*break*/, 3];
+            case 2:
+                error_2 = _a.sent();
+                console.log(error_2);
+                res.status(500).json({ error: 'Internal Server Error', details: error_2 });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.productRelated = productRelated;
 // get all the reviews of an product
 var productReviews = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var productId, reviews, error_2;
+    var productId, reviews, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -116,9 +145,9 @@ var productReviews = function (req, res) { return __awaiter(void 0, void 0, void
                 }
                 return [3 /*break*/, 3];
             case 2:
-                error_2 = _a.sent();
-                console.log(error_2);
-                res.status(500).json({ error: 'Internal Server Error', details: error_2 });
+                error_3 = _a.sent();
+                console.log(error_3);
+                res.status(500).json({ error: 'Internal Server Error', details: error_3 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }

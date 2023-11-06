@@ -32,6 +32,27 @@ export const productInfo = async (req:Request,res:Response) => {
     }
 };
 
+export const productRelated = async (req:Request , res:Response) => {
+    try {
+        const randomProducts = await Product.findAll({
+            order: db.sequelize.random(),
+            limit: 5,
+        });
+
+        if (randomProducts.length > 0) {
+            res.status(200).json(randomProducts);
+        }
+        else{
+            res.status(404).json({message : "No products found"});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: 'Internal Server Error', details : error});
+    }
+}
+
+
+
 // get all the reviews of an product
 export const productReviews = async (req :Request , res:Response) => { 
     try {
