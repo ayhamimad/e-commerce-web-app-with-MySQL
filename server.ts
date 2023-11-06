@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-db.sequelize.sync({alter: true});
+db.sequelize.sync();//{alter: true} remove it because we make the change and we don't need it 
 
 app.use('/api/v1/products', productRouter);
 
