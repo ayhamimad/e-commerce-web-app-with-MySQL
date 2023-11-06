@@ -10,6 +10,7 @@ const app: Application = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('assets'));
 
 db.sequelize.sync();   //{alter: true} remove it because we make the change and we don't need it dsad
 
