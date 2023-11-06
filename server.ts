@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('assets'));
 
 db.sequelize.sync();   //{alter: true} remove it because we make the change and we don't need it dsad
-//tt
+//tt asdfas 
 app.use('/api/v1/products', productRouter);
 
 const Port = process.env.PORT || 3000;
