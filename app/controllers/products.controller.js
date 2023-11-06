@@ -43,15 +43,15 @@ var Brand = models_1.default.brand;
 var Product = models_1.default.product;
 var Category = models_1.default.category;
 var list = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var resultsPerPage, page, _a, new_arrival, category, handpicked, brand, filteredProducts, currentDate, threeMonthsAgo, _b, count, rows, totalPages, categoryName, categorySearch, _c, count, rows, totalPages, _d, count, rows, totalPages, branNname, brandSearch, _e, count, rows, totalPages, err_1;
-    var _f, _g, _h, _j, _k;
-    return __generator(this, function (_l) {
-        switch (_l.label) {
+    var resultsPerPage, page, _a, new_arrival, category, handpicked, brand, search_term, filteredProducts, currentDate, threeMonthsAgo, _b, count, rows, totalPages, categoryName, categorySearch, _c, count, rows, totalPages, _d, count, rows, totalPages, branNname, brandSearch, _e, count, rows, totalPages, search_termName, brandSearch, _f, count, rows, totalPages, productDetails, err_1;
+    var _g, _h, _j, _k, _l, _m, _o;
+    return __generator(this, function (_p) {
+        switch (_p.label) {
             case 0:
-                _l.trys.push([0, 11, , 12]);
+                _p.trys.push([0, 16, , 17]);
                 resultsPerPage = parseInt(req.query.per_page, 10) || 12;
                 page = parseInt(req.query.page, 10) || 1;
-                _a = req.query, new_arrival = _a.new_arrival, category = _a.category, handpicked = _a.handpicked, brand = _a.brand;
+                _a = req.query, new_arrival = _a.new_arrival, category = _a.category, handpicked = _a.handpicked, brand = _a.brand, search_term = _a.search_term;
                 filteredProducts = void 0;
                 if (!(new_arrival === 'true')) return [3 /*break*/, 2];
                 currentDate = new Date();
@@ -59,16 +59,16 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                 threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
                 return [4 /*yield*/, Product.findAndCountAll({
                         where: {
-                            createdAt: (_f = {},
-                                _f[sequelize_1.Op.gt] = threeMonthsAgo,
-                                _f[sequelize_1.Op.lt] = currentDate,
-                                _f),
+                            createdAt: (_g = {},
+                                _g[sequelize_1.Op.gt] = threeMonthsAgo,
+                                _g[sequelize_1.Op.lt] = currentDate,
+                                _g),
                         },
                         offset: (page - 1) * resultsPerPage,
                         limit: resultsPerPage,
                     })];
             case 1:
-                _b = _l.sent(), count = _b.count, rows = _b.rows;
+                _b = _p.sent(), count = _b.count, rows = _b.rows;
                 totalPages = Math.ceil(count / resultsPerPage);
                 res.json({
                     results: rows,
@@ -79,33 +79,33 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                         totalResults: count,
                     },
                 });
-                _l.label = 2;
+                _p.label = 2;
             case 2:
                 if (!category) return [3 /*break*/, 7];
                 categoryName = req.query.category;
                 return [4 /*yield*/, Category.findOne({
                         where: {
-                            name: (_g = {}, _g[sequelize_1.Op.like] = "%".concat(categoryName, "%"), _g), // Use Op.like for a case-insensitive search
+                            name: (_h = {}, _h[sequelize_1.Op.like] = "%".concat(categoryName, "%"), _h), // Use Op.like for a case-insensitive search
                         },
                     })];
             case 3:
-                categorySearch = _l.sent();
+                categorySearch = _p.sent();
                 if (!(handpicked === 'true')) return [3 /*break*/, 5];
                 return [4 /*yield*/, Product.findAndCountAll({
                         where: {
                             categoryID: categorySearch.id,
-                            price: (_h = {},
-                                _h[sequelize_1.Op.lt] = 100,
-                                _h),
-                            rate: (_j = {},
-                                _j[sequelize_1.Op.gt] = 4.5,
+                            price: (_j = {},
+                                _j[sequelize_1.Op.lt] = 100,
                                 _j),
+                            rate: (_k = {},
+                                _k[sequelize_1.Op.gt] = 4.5,
+                                _k),
                         },
                         offset: (page - 1) * resultsPerPage,
                         limit: resultsPerPage,
                     })];
             case 4:
-                _c = _l.sent(), count = _c.count, rows = _c.rows;
+                _c = _p.sent(), count = _c.count, rows = _c.rows;
                 totalPages = Math.ceil(count / resultsPerPage);
                 res.json({
                     results: rows,
@@ -125,7 +125,7 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                     limit: resultsPerPage,
                 })];
             case 6:
-                _d = _l.sent(), count = _d.count, rows = _d.rows;
+                _d = _p.sent(), count = _d.count, rows = _d.rows;
                 totalPages = Math.ceil(count / resultsPerPage);
                 res.json({
                     results: rows,
@@ -136,17 +136,17 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                         totalResults: count,
                     },
                 });
-                _l.label = 7;
+                _p.label = 7;
             case 7:
                 if (!brand) return [3 /*break*/, 10];
                 branNname = req.query.brand;
                 return [4 /*yield*/, Brand.findOne({
                         where: {
-                            name: (_k = {}, _k[sequelize_1.Op.like] = "%".concat(branNname, "%"), _k), // Use Op.like for a case-insensitive search
+                            name: (_l = {}, _l[sequelize_1.Op.like] = "%".concat(branNname, "%"), _l), // Use Op.like for a case-insensitive search
                         },
                     })];
             case 8:
-                brandSearch = _l.sent();
+                brandSearch = _p.sent();
                 return [4 /*yield*/, Product.findAndCountAll({
                         where: {
                             brandID: brandSearch.id,
@@ -155,7 +155,7 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                         limit: resultsPerPage,
                     })];
             case 9:
-                _e = _l.sent(), count = _e.count, rows = _e.rows;
+                _e = _p.sent(), count = _e.count, rows = _e.rows;
                 totalPages = Math.ceil(count / resultsPerPage);
                 res.json({
                     results: rows,
@@ -166,14 +166,59 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                         totalResults: count,
                     },
                 });
-                _l.label = 10;
-            case 10: return [3 /*break*/, 12];
+                _p.label = 10;
+            case 10:
+                if (!search_term) return [3 /*break*/, 15];
+                search_termName = req.query.search_term;
+                return [4 /*yield*/, Brand.findOne({
+                        where: {
+                            name: (_m = {}, _m[sequelize_1.Op.like] = "%".concat(search_termName, "%"), _m), // Use Op.like for a case-insensitive search
+                        },
+                    })];
             case 11:
-                err_1 = _l.sent();
+                brandSearch = _p.sent();
+                if (!brandSearch) return [3 /*break*/, 13];
+                return [4 /*yield*/, Product.findAndCountAll({
+                        where: {
+                            brandID: brandSearch.id,
+                        },
+                        offset: (page - 1) * resultsPerPage,
+                        limit: resultsPerPage,
+                    })];
+            case 12:
+                _f = _p.sent(), count = _f.count, rows = _f.rows;
+                totalPages = Math.ceil(count / resultsPerPage);
+                res.status(200).json({
+                    results: rows,
+                    pagination: {
+                        currentPage: page,
+                        totalPages: totalPages,
+                        resultsPerPage: resultsPerPage,
+                        totalResults: count,
+                    },
+                });
+                return [3 /*break*/, 15];
+            case 13: return [4 /*yield*/, Product.findOne({
+                    where: {
+                        name: (_o = {}, _o[sequelize_1.Op.like] = "%".concat(search_term, "%"), _o), // Use Op.like for a case-insensitive search
+                    },
+                })];
+            case 14:
+                productDetails = _p.sent();
+                if (productDetails) {
+                    res.status(200).json(productDetails);
+                }
+                else {
+                    res.status(404).json({ message: 'No matching products found.' });
+                }
+                _p.label = 15;
+            case 15: return [3 /*break*/, 17];
+            case 16:
+                err_1 = _p.sent();
                 console.error('Error:', err_1);
                 res.status(500).json({ error: 'Internal Server Error' });
-                return [3 /*break*/, 12];
-            case 12: return [2 /*return*/];
+                return [3 /*break*/, 17];
+            case 17: return [2 /*return*/];
         }
     });
 }); };
