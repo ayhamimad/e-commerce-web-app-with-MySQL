@@ -9,7 +9,7 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-models_1.default.sequelize.sync();
+models_1.default.sequelize.sync({ alter: true });
 // app.get('/', (req: Request, res: Response) => {
 //     res.json({ message: 'welcome!!!!' });
 // });

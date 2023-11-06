@@ -35,7 +35,7 @@ var productModel = function (sequelize) {
             allowNull: false,
         },
         rate: {
-            type: sequelize_1.DataTypes.DECIMAL,
+            type: sequelize_1.DataTypes.DECIMAL(10, 2),
             allowNull: false,
         },
         discount: {

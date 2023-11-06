@@ -7,7 +7,7 @@ const Category = db.category;
 export const list = async (req: Request, res: Response) => {
     try{
         
-        const resultsPerPage = 9; // Set the number of results to display per page
+        const resultsPerPage = parseInt(req.query.per_page as string, 10) || 12; // Set the number of results to display per page
         const page = parseInt(req.query.page as string, 10) || 1; // Get the page number, default to 1 if not provided
 
         
@@ -45,65 +45,62 @@ export const list = async (req: Request, res: Response) => {
           }
         
           if (category) {
+            const categoryName = req.query.category as string;
+            const categorySearch = await Category.findOne({
+              where: {
+                name: { [Op.like]: `%${categoryName}%` }, // Use Op.like for a case-insensitive search
+              },
+            });
+          
             if (handpicked === 'true') {
-                const categoryName = req.query.category as string;
-                const categorySearch = await Category.findOne({
-                    where: {
-                      name: { [Op.like]: `%${categoryName}%` }, // Use Op.like for a case-insensitive search
-                    },
-                });
-                const { count, rows } = await Product.findAndCountAll({
-                    where: {
-                        categoryID: categorySearch.id,
-                        price: {
-                            [Op.lt]: 100 // [Op.lt] stands for "less than"
-                        },
-                        rate: {
-                            [Op.gt]: 4.5
-                        }
-                    },
-                    offset: (page - 1) * resultsPerPage,
-                    limit: resultsPerPage,
-                  });
-                  const totalPages = Math.ceil(count / resultsPerPage);// if if 5/2 = 2.5 if will make it 3 
-        
-                  res.json({
-                    results: rows,
-                    pagination: {
-                      currentPage: page, // Set the current page
-                      totalPages: totalPages,
-                      resultsPerPage: resultsPerPage,
-                      totalResults: count,
-                    },
-                  });
-            }else{
-                const categoryName = req.query.category as string;
-                const categorySearch = await Category.findOne({
-                    where: {
-                      name: { [Op.like]: `%${categoryName}%` }, // Use Op.like for a case-insensitive search
-                    },
-                });
-                const { count, rows } = await Product.findAndCountAll({
-                    where: {
-                        categoryID: categorySearch.id,
-                    },
-                    offset: (page - 1) * resultsPerPage,
-                    limit: resultsPerPage,
-                  });
-                  const totalPages = Math.ceil(count / resultsPerPage);// if if 5/2 = 2.5 if will make it 3 
-        
-                  res.json({
-                    results: rows,
-                    pagination: {
-                      currentPage: page, // Set the current page
-                      totalPages: totalPages,
-                      resultsPerPage: resultsPerPage,
-                      totalResults: count,
-                    },
-                  });
+              const { count, rows } = await Product.findAndCountAll({
+                where: {
+                  categoryID: categorySearch.id,
+                  price: {
+                    [Op.lt]: 100, // Products with price less than 100
+                  },
+                  rate: {
+                    [Op.gt]: 4.5, // Products with rating greater than 4.5
+                  },
+                },
+                offset: (page - 1) * resultsPerPage,
+                limit: resultsPerPage,
+              });
+          
+              const totalPages = Math.ceil(count / resultsPerPage);
+          
+              res.json({
+                results: rows,
+                pagination: {
+                  currentPage: page,
+                  totalPages: totalPages,
+                  resultsPerPage: resultsPerPage,
+                  totalResults: count,
+                },
+              });
+            } else {
+              const { count, rows } = await Product.findAndCountAll({
+                where: {
+                  categoryID: categorySearch.id,
+                },
+                offset: (page - 1) * resultsPerPage,
+                limit: resultsPerPage,
+              });
+          
+              const totalPages = Math.ceil(count / resultsPerPage);
+          
+              res.json({
+                results: rows,
+                pagination: {
+                  currentPage: page,
+                  totalPages: totalPages,
+                  resultsPerPage: resultsPerPage,
+                  totalResults: count,
+                },
+              });
             }
-            }
-        
+          }
+          
           
         
           if (brand) {
