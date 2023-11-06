@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var sequelize_1 = require("sequelize");
 var products_model_1 = require("./products.model");
-var categorydModel = function (sequelize) {
+var categoryModel = function (sequelize) {
     var Category = sequelize.define('category', {
         name: {
             type: sequelize_1.DataTypes.STRING,
@@ -19,4 +19,4 @@ var categorydModel = function (sequelize) {
     });
     return Category;
 };
-exports.default = categorydModel;
+exports.default = categoryModel;

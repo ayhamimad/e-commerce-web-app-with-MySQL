@@ -30,9 +30,9 @@ const Address = sequelize.define('user_address', {
     },
   });
   
-  Address.hasMany(orderModel(sequelize),{
-    foreignKey: "address_id"
-  })
+  // Address.hasMany(orderModel(sequelize),{
+  //   foreignKey: "address_id"
+  // })
   return Address;
 }
   export default userAddressModel;

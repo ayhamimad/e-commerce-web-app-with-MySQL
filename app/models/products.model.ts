@@ -1,11 +1,8 @@
 import { DataTypes, Sequelize } from 'sequelize';
-import reviewsModel from './reviews.model';
 import orderItemModel from './orderItem.model';
-
+import reviewsModel from "./reviews.model";
 const productModel = (sequelize: Sequelize) => {
-
-
-const Product = sequelize.define('product', {
+  const Product = sequelize.define('product', {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -16,12 +13,12 @@ const Product = sequelize.define('product', {
       allowNull: false,
     },
     categoryID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     brandID: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
@@ -48,13 +45,16 @@ const Product = sequelize.define('product', {
       allowNull: false,
     },
   });
-  Product.hasMany(orderItemModel(sequelize),{
-    foreignKey: "productID"
-  });
-  Product.hasMany(reviewsModel(sequelize),{
-    foreignKey: "product_id"
-  })
-  
+
+  // Product.hasMany(orderItemModel(sequelize), {
+  //   foreignKey: "productID",
+  // });
+
+  // Product.hasMany(reviewsModel(sequelize), {
+  //   foreignKey: "product_id",
+  // });
+
   return Product;
-}
+};
+
 export default productModel;

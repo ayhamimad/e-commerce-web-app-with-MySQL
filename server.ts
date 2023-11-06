@@ -13,10 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 db.sequelize.sync({alter: true});
 
-// app.get('/', (req: Request, res: Response) => {
-//     res.json({ message: 'welcome!!!!' });
-// });
-
 app.use('/api/v1/products', productRouter);
 
 const Port = process.env.PORT || 3000;
