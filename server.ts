@@ -11,10 +11,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-db.sequelize.sync();//{alter: true} remove it because we make the change and we don't need it 
+db.sequelize.sync();   //{alter: true} remove it because we make the change and we don't need it dsad
 
 app.use('/api/v1/products', productRouter);
-
+// app.
 const Port = process.env.PORT || 3000;
 app.listen(Port, () => {
     console.log(`Server is running on ${Port}`);
