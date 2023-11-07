@@ -55,273 +55,121 @@ var Product = models_1.default.product;
 var Category = models_1.default.category;
 var Reviews = models_1.default.review;
 var list = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var resultsPerPage, page, _a, new_arrival, category, handpicked, brand, search_term, filteredProducts, currentDate, threeMonthsAgo, _b, count, rows, totalPages, productsWithReviewCounts, _i, rows_1, product, reviewCount, categoryName, categorySearch, _c, count, rows, totalPages, productsWithReviewCounts, _d, rows_2, product, reviewCount, _e, count, rows, totalPages, branNname, brandSearch, _f, count, rows, totalPages, productsWithReviewCounts, _g, rows_3, product, reviewCount, search_termName, brandSearch, _h, count, rows, totalPages, productsWithReviewCounts, _j, rows_4, product, reviewCount, _k, count, rows, totalPages, productsWithReviewCounts, _l, rows_5, product, reviewCount, err_1;
-    var _m, _o, _p, _q, _r, _s, _t;
-    return __generator(this, function (_u) {
-        switch (_u.label) {
+    var resultsPerPage, page, _a, category, brand, handpicked, new_arrival, search_term, whereClause, categoryName, categorySearch, brandName, brandSearch, currentDate, threeMonthsAgo, search_termName, brandSearch, _b, count, rows, totalPages, productsWithReviewCounts, _i, rows_1, product, reviewCount, err_1;
+    var _c, _d, _e, _f, _g, _h, _j;
+    return __generator(this, function (_k) {
+        switch (_k.label) {
             case 0:
-                _u.trys.push([0, 36, , 37]);
+                _k.trys.push([0, 12, , 13]);
                 resultsPerPage = parseInt(req.query.per_page, 10) || 12;
                 page = parseInt(req.query.page, 10) || 1;
-                _a = req.query, new_arrival = _a.new_arrival, category = _a.category, handpicked = _a.handpicked, brand = _a.brand, search_term = _a.search_term;
-                filteredProducts = void 0;
-                if (!(new_arrival === "true")) return [3 /*break*/, 6];
-                currentDate = new Date();
-                threeMonthsAgo = new Date();
-                threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
-                return [4 /*yield*/, Product.findAndCountAll({
+                _a = req.query, category = _a.category, brand = _a.brand, handpicked = _a.handpicked, new_arrival = _a.new_arrival, search_term = _a.search_term;
+                whereClause = {};
+                if (!category) return [3 /*break*/, 2];
+                categoryName = req.query.category;
+                return [4 /*yield*/, Category.findOne({
                         where: {
-                            createdAt: (_m = {},
-                                _m[sequelize_1.Op.gt] = threeMonthsAgo,
-                                _m[sequelize_1.Op.lt] = currentDate,
-                                _m),
+                            name: (_c = {}, _c[sequelize_1.Op.like] = "%".concat(categoryName, "%"), _c),
                         },
-                        offset: (page - 1) * resultsPerPage,
-                        limit: resultsPerPage,
                     })];
             case 1:
-                _b = _u.sent(), count = _b.count, rows = _b.rows;
+                categorySearch = _k.sent();
+                if (categorySearch) {
+                    whereClause = __assign(__assign({}, whereClause), { categoryID: categorySearch.id });
+                }
+                _k.label = 2;
+            case 2:
+                if (!brand) return [3 /*break*/, 4];
+                brandName = req.query.brand;
+                return [4 /*yield*/, Brand.findOne({
+                        where: {
+                            name: (_d = {}, _d[sequelize_1.Op.like] = "%".concat(brandName, "%"), _d),
+                        },
+                    })];
+            case 3:
+                brandSearch = _k.sent();
+                if (brandSearch) {
+                    whereClause = __assign(__assign({}, whereClause), { brandID: brandSearch.id });
+                }
+                _k.label = 4;
+            case 4:
+                // Handle 'handpicked' query parameter
+                if (handpicked === "true") {
+                    whereClause = __assign(__assign({}, whereClause), { price: (_e = {},
+                            _e[sequelize_1.Op.lt] = 100,
+                            _e), rate: (_f = {},
+                            _f[sequelize_1.Op.gt] = 4.5,
+                            _f) });
+                }
+                // Handle 'new_arrival' query parameter
+                if (new_arrival === "true") {
+                    currentDate = new Date();
+                    threeMonthsAgo = new Date();
+                    threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+                    whereClause = __assign(__assign({}, whereClause), { createdAt: (_g = {},
+                            _g[sequelize_1.Op.gt] = threeMonthsAgo,
+                            _g[sequelize_1.Op.lt] = currentDate,
+                            _g) });
+                }
+                if (!search_term) return [3 /*break*/, 6];
+                search_termName = req.query.search_term;
+                return [4 /*yield*/, Brand.findOne({
+                        where: {
+                            name: (_h = {}, _h[sequelize_1.Op.like] = "%".concat(search_termName, "%"), _h),
+                        },
+                    })];
+            case 5:
+                brandSearch = _k.sent();
+                if (brandSearch) {
+                    // If it's a brand search, send products in that brand
+                    whereClause = __assign(__assign({}, whereClause), { brandID: brandSearch.id });
+                }
+                else {
+                    // Otherwise, search for products with a name containing the search term
+                    whereClause = __assign(__assign({}, whereClause), { name: (_j = {}, _j[sequelize_1.Op.like] = "%".concat(search_termName, "%"), _j) });
+                }
+                _k.label = 6;
+            case 6: return [4 /*yield*/, Product.findAndCountAll({
+                    where: whereClause,
+                    offset: (page - 1) * resultsPerPage,
+                    limit: resultsPerPage,
+                })];
+            case 7:
+                _b = _k.sent(), count = _b.count, rows = _b.rows;
                 totalPages = Math.ceil(count / resultsPerPage);
                 productsWithReviewCounts = [];
                 _i = 0, rows_1 = rows;
-                _u.label = 2;
-            case 2:
-                if (!(_i < rows_1.length)) return [3 /*break*/, 5];
+                _k.label = 8;
+            case 8:
+                if (!(_i < rows_1.length)) return [3 /*break*/, 11];
                 product = rows_1[_i];
                 return [4 /*yield*/, Reviews.findAndCountAll({
                         where: { product_id: product.id },
                     })];
-            case 3:
-                reviewCount = (_u.sent()).count;
-                productsWithReviewCounts.push(__assign(__assign({}, product.toJSON()), { ratingCount: reviewCount }));
-                _u.label = 4;
-            case 4:
-                _i++;
-                return [3 /*break*/, 2];
-            case 5:
-                res.json({
-                    results: productsWithReviewCounts,
-                    pagination: {
-                        currentPage: page,
-                        totalPages: totalPages,
-                        resultsPerPage: resultsPerPage,
-                        totalResults: count,
-                    },
-                });
-                _u.label = 6;
-            case 6:
-                if (!category) return [3 /*break*/, 15];
-                categoryName = req.query.category;
-                return [4 /*yield*/, Category.findOne({
-                        where: {
-                            name: (_o = {}, _o[sequelize_1.Op.like] = "%".concat(categoryName, "%"), _o), // Use Op.like for a case-insensitive search
-                        },
-                    })];
-            case 7:
-                categorySearch = _u.sent();
-                if (!(handpicked === "true")) return [3 /*break*/, 13];
-                return [4 /*yield*/, Product.findAndCountAll({
-                        where: {
-                            categoryID: categorySearch.id,
-                            price: (_p = {},
-                                _p[sequelize_1.Op.lt] = 100,
-                                _p),
-                            rate: (_q = {},
-                                _q[sequelize_1.Op.gt] = 4.5,
-                                _q),
-                        },
-                        offset: (page - 1) * resultsPerPage,
-                        limit: resultsPerPage,
-                    })];
-            case 8:
-                _c = _u.sent(), count = _c.count, rows = _c.rows;
-                totalPages = Math.ceil(count / resultsPerPage);
-                productsWithReviewCounts = [];
-                _d = 0, rows_2 = rows;
-                _u.label = 9;
             case 9:
-                if (!(_d < rows_2.length)) return [3 /*break*/, 12];
-                product = rows_2[_d];
-                return [4 /*yield*/, Reviews.findAndCountAll({
-                        where: { product_id: product.id },
-                    })];
+                reviewCount = (_k.sent()).count;
+                productsWithReviewCounts.push(__assign(__assign({}, product.toJSON()), { ratingCount: reviewCount }));
+                _k.label = 10;
             case 10:
-                reviewCount = (_u.sent()).count;
-                productsWithReviewCounts.push(__assign(__assign({}, product.toJSON()), { ratingCount: reviewCount }));
-                _u.label = 11;
+                _i++;
+                return [3 /*break*/, 8];
             case 11:
-                _d++;
-                return [3 /*break*/, 9];
+                res.status(200).json({
+                    results: productsWithReviewCounts,
+                    pagination: {
+                        currentPage: page,
+                        totalPages: totalPages,
+                        resultsPerPage: resultsPerPage,
+                        totalResults: count,
+                    },
+                });
+                return [3 /*break*/, 13];
             case 12:
-                res.json({
-                    results: productsWithReviewCounts,
-                    pagination: {
-                        currentPage: page,
-                        totalPages: totalPages,
-                        resultsPerPage: resultsPerPage,
-                        totalResults: count,
-                    },
-                });
-                return [3 /*break*/, 15];
-            case 13: return [4 /*yield*/, Product.findAndCountAll({
-                    where: {
-                        categoryID: categorySearch.id,
-                    },
-                    offset: (page - 1) * resultsPerPage,
-                    limit: resultsPerPage,
-                })];
-            case 14:
-                _e = _u.sent(), count = _e.count, rows = _e.rows;
-                totalPages = Math.ceil(count / resultsPerPage);
-                res.json({
-                    results: rows,
-                    pagination: {
-                        currentPage: page,
-                        totalPages: totalPages,
-                        resultsPerPage: resultsPerPage,
-                        totalResults: count,
-                    },
-                });
-                _u.label = 15;
-            case 15:
-                if (!brand) return [3 /*break*/, 22];
-                branNname = req.query.brand;
-                return [4 /*yield*/, Brand.findOne({
-                        where: {
-                            name: (_r = {}, _r[sequelize_1.Op.like] = "%".concat(branNname, "%"), _r), // Use Op.like for a case-insensitive search
-                        },
-                    })];
-            case 16:
-                brandSearch = _u.sent();
-                return [4 /*yield*/, Product.findAndCountAll({
-                        where: {
-                            brandID: brandSearch.id,
-                        },
-                        offset: (page - 1) * resultsPerPage,
-                        limit: resultsPerPage,
-                    })];
-            case 17:
-                _f = _u.sent(), count = _f.count, rows = _f.rows;
-                totalPages = Math.ceil(count / resultsPerPage);
-                productsWithReviewCounts = [];
-                _g = 0, rows_3 = rows;
-                _u.label = 18;
-            case 18:
-                if (!(_g < rows_3.length)) return [3 /*break*/, 21];
-                product = rows_3[_g];
-                return [4 /*yield*/, Reviews.findAndCountAll({
-                        where: { product_id: product.id },
-                    })];
-            case 19:
-                reviewCount = (_u.sent()).count;
-                productsWithReviewCounts.push(__assign(__assign({}, product.toJSON()), { ratingCount: reviewCount }));
-                _u.label = 20;
-            case 20:
-                _g++;
-                return [3 /*break*/, 18];
-            case 21:
-                res.json({
-                    results: productsWithReviewCounts,
-                    pagination: {
-                        currentPage: page,
-                        totalPages: totalPages,
-                        resultsPerPage: resultsPerPage,
-                        totalResults: count,
-                    },
-                });
-                _u.label = 22;
-            case 22:
-                if (!search_term) return [3 /*break*/, 35];
-                search_termName = req.query.search_term;
-                return [4 /*yield*/, Brand.findOne({
-                        where: {
-                            name: (_s = {}, _s[sequelize_1.Op.like] = "%".concat(search_termName, "%"), _s), // Use Op.like for a case-insensitive search
-                        },
-                    })];
-            case 23:
-                brandSearch = _u.sent();
-                if (!brandSearch) return [3 /*break*/, 29];
-                return [4 /*yield*/, Product.findAndCountAll({
-                        where: {
-                            brandID: brandSearch.id,
-                        },
-                        offset: (page - 1) * resultsPerPage,
-                        limit: resultsPerPage,
-                    })];
-            case 24:
-                _h = _u.sent(), count = _h.count, rows = _h.rows;
-                totalPages = Math.ceil(count / resultsPerPage);
-                productsWithReviewCounts = [];
-                _j = 0, rows_4 = rows;
-                _u.label = 25;
-            case 25:
-                if (!(_j < rows_4.length)) return [3 /*break*/, 28];
-                product = rows_4[_j];
-                return [4 /*yield*/, Reviews.findAndCountAll({
-                        where: { product_id: product.id },
-                    })];
-            case 26:
-                reviewCount = (_u.sent()).count;
-                productsWithReviewCounts.push(__assign(__assign({}, product.toJSON()), { ratingCount: reviewCount }));
-                _u.label = 27;
-            case 27:
-                _j++;
-                return [3 /*break*/, 25];
-            case 28:
-                res.status(200).json({
-                    results: productsWithReviewCounts,
-                    pagination: {
-                        currentPage: page,
-                        totalPages: totalPages,
-                        resultsPerPage: resultsPerPage,
-                        totalResults: count,
-                    },
-                });
-                return [3 /*break*/, 35];
-            case 29: return [4 /*yield*/, Product.findAndCountAll({
-                    where: {
-                        name: (_t = {}, _t[sequelize_1.Op.like] = "%".concat(search_termName, "%"), _t), // Use Op.iLike for a case-insensitive search
-                    },
-                    offset: (page - 1) * resultsPerPage,
-                    limit: resultsPerPage,
-                })];
-            case 30:
-                _k = _u.sent(), count = _k.count, rows = _k.rows;
-                totalPages = Math.ceil(count / resultsPerPage);
-                productsWithReviewCounts = [];
-                _l = 0, rows_5 = rows;
-                _u.label = 31;
-            case 31:
-                if (!(_l < rows_5.length)) return [3 /*break*/, 34];
-                product = rows_5[_l];
-                return [4 /*yield*/, Reviews.findAndCountAll({
-                        where: { product_id: product.id },
-                    })];
-            case 32:
-                reviewCount = (_u.sent()).count;
-                productsWithReviewCounts.push(__assign(__assign({}, product.toJSON()), { ratingCount: reviewCount }));
-                _u.label = 33;
-            case 33:
-                _l++;
-                return [3 /*break*/, 31];
-            case 34:
-                res.status(200).json({
-                    results: productsWithReviewCounts,
-                    pagination: {
-                        currentPage: page,
-                        totalPages: totalPages,
-                        resultsPerPage: resultsPerPage,
-                        totalResults: count,
-                    },
-                });
-                _u.label = 35;
-            case 35: return [3 /*break*/, 37];
-            case 36:
-                err_1 = _u.sent();
+                err_1 = _k.sent();
                 console.error("Error:", err_1);
                 res.status(500).json({ error: "Internal Server Error" });
-                return [3 /*break*/, 37];
-            case 37: return [2 /*return*/];
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); };
