@@ -13,7 +13,6 @@ export const productInfo = async (req:Request,res:Response) => {
 
         const product = await Product.findByPk(productId);
         const {count}  = await Reviews.findAndCountAll({where : {product_id : productId}});  
-        product.ratingCount = count
         if (product) {
             const productInfo = {
                 ...product.toJSON(), // Converts the Sequelize model to a plain JavaScript object

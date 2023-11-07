@@ -68,7 +68,6 @@ var productInfo = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 return [4 /*yield*/, Reviews.findAndCountAll({ where: { product_id: productId } })];
             case 2:
                 count = (_a.sent()).count;
-                product.ratingCount = count;
                 if (product) {
                     productInfo_1 = __assign(__assign({}, product.toJSON()), { ratingCount: count });
                     res.status(200).json({ product: productInfo_1 });
@@ -154,4 +153,4 @@ var productReviews = function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.productReviews = productReviews;
-// export const addProductToCart
+// export const addProductToCart helooooo how are you 
