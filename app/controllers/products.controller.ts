@@ -5,6 +5,7 @@ const Brand = db.brand;
 const Product = db.product;
 const Category = db.category;
 const Reviews = db.review;
+
 export const list = async (req: Request, res: Response) => {
   try {
     const resultsPerPage = parseInt(req.query.per_page as string, 10) || 12; // Set the number of results to display per page
