@@ -54,6 +54,7 @@ var Brand = models_1.default.brand;
 var Product = models_1.default.product;
 var Category = models_1.default.category;
 var Reviews = models_1.default.review;
+console.log("hello;");
 var list = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var resultsPerPage, page, _a, category, brand, handpicked, new_arrival, search_term, whereClause, categoryName, categorySearch, brandName, brandSearch, currentDate, threeMonthsAgo, search_termName, brandSearch, _b, count, rows, totalPages, productsWithReviewCounts, _i, rows_1, product, reviewCount, err_1;
     var _c, _d, _e, _f, _g, _h, _j;
