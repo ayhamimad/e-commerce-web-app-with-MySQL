@@ -1,6 +1,7 @@
 import db from "../models";
 import { Request, Response } from "express";
 import { Op } from "sequelize";
+
 const Brand = db.brand;
 const Product = db.product;
 const Category = db.category;
@@ -8,252 +9,129 @@ const Reviews = db.review;
 
 export const list = async (req: Request, res: Response) => {
   try {
-    const resultsPerPage = parseInt(req.query.per_page as string, 10) || 12; // Set the number of results to display per page
-    const page = parseInt(req.query.page as string, 10) || 1; // Get the page number, default to 1 if not provided
+    const resultsPerPage = parseInt(req.query.per_page as string, 10) || 12;
+    const page = parseInt(req.query.page as string, 10) || 1;
 
-    const { new_arrival, category, handpicked, brand, search_term } = req.query;
+    const { category, brand, handpicked, new_arrival, search_term } = req.query;
 
-    // Assuming you have an array of products stored in a variable called 'products'
-    // Filter products based on query parameters
+    let whereClause = {}; // Define a base where clause
 
-    //---------------------------------------------------new arrival -------------------------------------------------------------
-    let filteredProducts;
+    // Handle 'category' query parameter
+    if (category) {
+      const categoryName = req.query.category as string;
+      const categorySearch = await Category.findOne({
+        where: {
+          name: { [Op.like]: `%${categoryName}%` },
+        },
+      });
+
+      if (categorySearch) {
+        whereClause = {
+          ...whereClause,
+          categoryID: categorySearch.id,
+        };
+      }
+    }
+
+    // Handle 'brand' query parameter
+    if (brand) {
+      const brandName = req.query.brand as string;
+      const brandSearch = await Brand.findOne({
+        where: {
+          name: { [Op.like]: `%${brandName}%` },
+        },
+      });
+
+      if (brandSearch) {
+        whereClause = {
+          ...whereClause,
+          brandID: brandSearch.id,
+        };
+      }
+    }
+
+    // Handle 'handpicked' query parameter
+    if (handpicked === "true") {
+      whereClause = {
+        ...whereClause,
+        price: {
+          [Op.lt]: 100,
+        },
+        rate: {
+          [Op.gt]: 4.5,
+        },
+      };
+    }
+
+    // Handle 'new_arrival' query parameter
     if (new_arrival === "true") {
       const currentDate = new Date();
       const threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
 
-      const { count, rows } = await Product.findAndCountAll({
-        where: {
-          createdAt: {
-            [Op.gt]: threeMonthsAgo, // Products created after three months ago
-            [Op.lt]: currentDate,
-          },
+      whereClause = {
+        ...whereClause,
+        createdAt: {
+          [Op.gt]: threeMonthsAgo,
+          [Op.lt]: currentDate,
         },
-        offset: (page - 1) * resultsPerPage,
-        limit: resultsPerPage,
-      });
-      const totalPages = Math.ceil(count / resultsPerPage); // if if 5/2 = 2.5 if will make it 3
-      const productsWithReviewCounts = [];
-
-      for (const product of rows) {
-        const { count: reviewCount } = await Reviews.findAndCountAll({
-          where: { product_id: product.id },
-        });
-
-        productsWithReviewCounts.push({
-          ...product.toJSON(), // Include the product details
-          ratingCount: reviewCount,
-        });
-      }
-
-      res.json({
-        results: productsWithReviewCounts,
-        pagination: {
-          currentPage: page, // Set the current page
-          totalPages: totalPages,
-          resultsPerPage: resultsPerPage,
-          totalResults: count,
-        },
-      });
+      };
     }
 
-    //--------------------------------------------------category name and handpicked-----------------------------------------------
-    if (category) {
-      const categoryName = req.query.category as string;
-      const categorySearch = await Category.findOne({
-        where: {
-          name: { [Op.like]: `%${categoryName}%` }, // Use Op.like for a case-insensitive search
-        },
-      });
-
-      if (handpicked === "true") {
-        const { count, rows } = await Product.findAndCountAll({
-          where: {
-            categoryID: categorySearch.id,
-            price: {
-              [Op.lt]: 100, // Products with price less than 100
-            },
-            rate: {
-              [Op.gt]: 4.5, // Products with rating greater than 4.5
-            },
-          },
-          offset: (page - 1) * resultsPerPage,
-          limit: resultsPerPage,
-        });
-
-        const totalPages = Math.ceil(count / resultsPerPage);
-
-        const productsWithReviewCounts = [];
-
-        for (const product of rows) {
-          const { count: reviewCount } = await Reviews.findAndCountAll({
-            where: { product_id: product.id },
-          });
-
-          productsWithReviewCounts.push({
-            ...product.toJSON(), // Include the product details
-            ratingCount: reviewCount,
-          });
-        }
-
-        res.json({
-          results: productsWithReviewCounts,
-          pagination: {
-            currentPage: page,
-            totalPages: totalPages,
-            resultsPerPage: resultsPerPage,
-            totalResults: count,
-          },
-        });
-      } else {
-        const { count, rows } = await Product.findAndCountAll({
-          where: {
-            categoryID: categorySearch.id,
-          },
-          offset: (page - 1) * resultsPerPage,
-          limit: resultsPerPage,
-        });
-
-        const totalPages = Math.ceil(count / resultsPerPage);
-
-        res.json({
-          results: rows,
-          pagination: {
-            currentPage: page,
-            totalPages: totalPages,
-            resultsPerPage: resultsPerPage,
-            totalResults: count,
-          },
-        });
-      }
-    }
-
-    //-----------------------------------------------------list brand-------------------------------------------------------------
-    if (brand) {
-      const branNname = req.query.brand as string;
-      const brandSearch = await Brand.findOne({
-        where: {
-          name: { [Op.like]: `%${branNname}%` }, // Use Op.like for a case-insensitive search
-        },
-      });
-      const { count, rows } = await Product.findAndCountAll({
-        where: {
-          brandID: brandSearch.id,
-        },
-        offset: (page - 1) * resultsPerPage,
-        limit: resultsPerPage,
-      });
-      const totalPages = Math.ceil(count / resultsPerPage); // if if 5/2 = 2.5 if will make it 3
-
-      const productsWithReviewCounts = [];
-
-      for (const product of rows) {
-        const { count: reviewCount } = await Reviews.findAndCountAll({
-          where: { product_id: product.id },
-        });
-
-        productsWithReviewCounts.push({
-          ...product.toJSON(), // Include the product details
-          ratingCount: reviewCount,
-        });
-      }
-
-      res.json({
-        results: productsWithReviewCounts,
-        pagination: {
-          currentPage: page, // Set the current page
-          totalPages: totalPages,
-          resultsPerPage: resultsPerPage,
-          totalResults: count,
-        },
-      });
-    }
-
-    // const resultsPerPage = 12; // Set the number of results to display per page
-    // const page = parseInt(req.query.page as string, 10) || 1; // Get the page number, default to 1 if not provided
-
-    //-----------------------------------------------search--------------------------------------------------------------
-    // ...
-
-    // Filter by search term
+    // Handle 'search_term' query parameter for both brand and product names
     if (search_term) {
       const search_termName = req.query.search_term as string;
 
-      // Check if it's a brand search by name
       const brandSearch = await Brand.findOne({
         where: {
-          name: { [Op.like]: `%${search_termName}%` }, // Use Op.like for a case-insensitive search
+          name: { [Op.like]: `%${search_termName}%` },
         },
       });
 
       if (brandSearch) {
         // If it's a brand search, send products in that brand
-        const { count, rows } = await Product.findAndCountAll({
-          where: {
-            brandID: brandSearch.id,
-          },
-          offset: (page - 1) * resultsPerPage,
-          limit: resultsPerPage,
-        });
-        const totalPages = Math.ceil(count / resultsPerPage);
-
-        const productsWithReviewCounts = [];
-
-        for (const product of rows) {
-          const { count: reviewCount } = await Reviews.findAndCountAll({
-            where: { product_id: product.id },
-          });
-
-          productsWithReviewCounts.push({
-            ...product.toJSON(),
-            ratingCount: reviewCount,
-          });
-        }
-
-        res.status(200).json({
-          results: productsWithReviewCounts,
-          pagination: {
-            currentPage: page,
-            totalPages: totalPages,
-            resultsPerPage: resultsPerPage,
-            totalResults: count,
-          },
-        });
+        whereClause = {
+          ...whereClause,
+          brandID: brandSearch.id,
+        };
       } else {
         // Otherwise, search for products with a name containing the search term
-        const { count, rows } = await Product.findAndCountAll({
-          where: {
-            name: { [Op.like]: `%${search_termName}%` }, // Use Op.iLike for a case-insensitive search
-          },
-          offset: (page - 1) * resultsPerPage,
-          limit: resultsPerPage,
-        });
-        const totalPages = Math.ceil(count / resultsPerPage);
-        const productsWithReviewCounts = [];
-
-        for (const product of rows) {
-          const { count: reviewCount } = await Reviews.findAndCountAll({
-            where: { product_id: product.id },
-          });
-
-          productsWithReviewCounts.push({
-            ...product.toJSON(),
-            ratingCount: reviewCount,
-          });
-        }
-
-        res.status(200).json({
-          results: productsWithReviewCounts,
-          pagination: {
-            currentPage: page,
-            totalPages: totalPages,
-            resultsPerPage: resultsPerPage,
-            totalResults: count,
-          },
-        });
+        whereClause = {
+          ...whereClause,
+          name: { [Op.like]: `%${search_termName}%` },
+        };
       }
     }
+
+    const { count, rows } = await Product.findAndCountAll({
+      where: whereClause,
+      offset: (page - 1) * resultsPerPage,
+      limit: resultsPerPage,
+    });
+
+    const totalPages = Math.ceil(count / resultsPerPage);
+    const productsWithReviewCounts = [];
+
+    for (const product of rows) {
+      const { count: reviewCount } = await Reviews.findAndCountAll({
+        where: { product_id: product.id },
+      });
+
+      productsWithReviewCounts.push({
+        ...product.toJSON(),
+        ratingCount: reviewCount,
+      });
+    }
+
+    res.status(200).json({
+      results: productsWithReviewCounts,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        resultsPerPage: resultsPerPage,
+        totalResults: count,
+      },
+    });
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
