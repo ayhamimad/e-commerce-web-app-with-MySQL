@@ -229,7 +229,7 @@ export const list = async (req: Request, res: Response) => {
     
           } else {
             // Otherwise, search for the product details by name
-            const productDetails = await Product.findOne({
+            const productDetails = await Product.findAll({
               where: {
                 name: { [Op.like]: `%${search_term}%` }, // Use Op.like for a case-insensitive search
               },

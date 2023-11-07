@@ -278,7 +278,7 @@ var list = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                     },
                 });
                 return [3 /*break*/, 32];
-            case 29: return [4 /*yield*/, Product.findOne({
+            case 29: return [4 /*yield*/, Product.findAll({
                     where: {
                         name: (_r = {}, _r[sequelize_1.Op.like] = "%".concat(search_term, "%"), _r), // Use Op.like for a case-insensitive search
                     },
