@@ -18,7 +18,7 @@ export const productInfo = async (req:Request,res:Response) => {
                 ...product.toJSON(), // Converts the Sequelize model to a plain JavaScript object
                 ratingCount: count,
             };
-            res.status(200).json({product: productInfo});
+            res.status(200).json({products: productInfo});
         }
         else{
             res.status(404).json({
@@ -39,7 +39,7 @@ export const productRelated = async (req:Request , res:Response) => {
         });
 
         if (randomProducts.length > 0) {
-            res.status(200).json(randomProducts);
+            res.status(200).json({products:randomProducts});
         }
         else{
             res.status(404).json({message : "No products found"});
