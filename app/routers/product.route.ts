@@ -8,6 +8,7 @@ router.get('/',productsController.list);
 router.get('/:productId',productPageController.productInfo);
 router.get('/:productId/related',productPageController.productRelated);
 router.get('/:productId/reviews',productPageController.productReviews);
+router.post('/:productId/add_to_cart',productPageController.addProductToCart);
 
 
 export default router;
