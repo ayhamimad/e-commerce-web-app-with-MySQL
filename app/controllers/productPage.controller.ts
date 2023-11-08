@@ -90,86 +90,82 @@ export const productReviews = async (req: Request, res: Response) => {
   }
 };
 
-
 // create an order if it doesn't exist and if it's status not in_cart
 export const addProductToCart = async (req: Request, res: Response) => {
   try {
     const user = req.user as typeof User;
+    console.log("User ID:", user.id);
+
     const { orderItemQuantity } = req.body;
     const { productId } = req.params;
-    // check if the product exists in the database
+    // Check if the product exists in the database
     const product = await Product.findByPk(productId);
     if (!product) {
-      res.status(404).json({ message: "product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
-    let cart = await Order.findOne({ where: { user_id: user.id } });
-    let order_item = await OrderItem.findOne({
-      where: { productID: productId },
+    // Find the user's existing "in-cart" order
+    let cart = await Order.findOne({
+      where: { user_id: user.id, status: "in_cart" },
     });
-    // create new order and add item on it if item doesn't exist and if exist update the quantity 
-    if (!cart || cart.status==='placed' || cart.status==='paid' || cart.status==='canceled') {
+
+    if (!cart) {
+      // If no "in-cart" order exists, create a new one
       cart = await Order.create({
         user_id: user.id,
         address_id: null,
-        status: 'in_cart',
+        status: "in_cart",
         total_price: 0,
         tax: 2,
       });
-      if (!order_item) {
-        //create new item and save it to the db
-        order_item = await OrderItem.create({
-          quantity: orderItemQuantity,
-          orderID: cart.id,
-          productID: productId,
-          sub_total: product.price * product.discount * orderItemQuantity,
-        });
-      } else {
-        //update existing item with new quantity
-        order_item = {
-          ...order_item,
-          quantity: order_item.quantity + orderItemQuantity,
-        };
-        await OrderItem.update(
-          { quantity: order_item.quantity },
-          { where: { id: order_item.id } }
-        );
-      }
-      //add price of this item to the total price of the cart
-      cart.total_price += order_item.sub_total;
-      await cart.save();
-      console.log("the product added as new orderItem to a new order");
-      res.status(201).json({message:"the product added as new orderItem to a new order"}); 
-    //   if there an order it's  status is in_cart
-    } else {
-        if (!order_item) {
-          //create new item and save it to the db
-            order_item = await OrderItem.create({
-            quantity: orderItemQuantity,
-            orderID: cart.id,
-            productID: productId,
-            sub_total: product.price * product.discount * orderItemQuantity,
-          });
-        } else {
-          //update existing item with new quantity
-          order_item = {
-            ...order_item,
-            quantity: order_item.quantity + orderItemQuantity,
-          };
-          await OrderItem.update(
-            { quantity: order_item.quantity },
-            { where: { id: order_item.id } }
-          );
-        }
-        //add price of this item to the total price of the cart
-        cart.total_price += order_item.sub_total;
-        await cart.save();
-        console.log("added anew orderItem");
-        res.status(201).json({ message: "product added as new orderItem" });
     }
+
+    // Find the existing order item for the given product
+    let order_item = await OrderItem.findOne({
+      where: { productID: productId, orderID: cart.id },
+    });
+
+    if (order_item) {
+      // If the order item already exists, update its quantity and sub-total
+      order_item.quantity += orderItemQuantity;
+      order_item.sub_total =
+        (product.price - product.price * (product.discount / 100)) *
+        order_item.quantity;
+      await order_item.save();
+    } else {
+      // If the order item doesn't exist, create a new one and save it to the database
+      order_item = await OrderItem.create({
+        quantity: orderItemQuantity,
+        orderID: cart.id,
+        productID: productId,
+        sub_total:
+          (product.price - product.price * (product.discount / 100)) *
+          orderItemQuantity,
+      });
+    }
+    // Update the total price of the cart
+    const orderItems = await OrderItem.findAll({
+      where: { orderID: cart.id },
+    });
+
+    let newTotalPrice = 0;
+
+    for (const item of orderItems) {
+      newTotalPrice += parseFloat(item.sub_total);
+      console.log(newTotalPrice);
+    }
+
+    cart.total_price = newTotalPrice;
+    await cart.save();
+
+    console.log(cart.total_price);
+
+    console.log("The product added as an order item to the cart");
+    res.status(201).json({
+      message: "The product added as an order item to the cart",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error", details: error });
   }
 };
-

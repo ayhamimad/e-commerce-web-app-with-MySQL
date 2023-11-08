@@ -166,102 +166,97 @@ var productReviews = function (req, res) { return __awaiter(void 0, void 0, void
 exports.productReviews = productReviews;
 // create an order if it doesn't exist and if it's status not in_cart
 var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, orderItemQuantity, productId, product, cart, order_item, error_4;
+    var user, orderItemQuantity, productId, product, cart, order_item, orderItems, newTotalPrice, _i, orderItems_1, item, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 17, , 18]);
+                _a.trys.push([0, 12, , 13]);
                 user = req.user;
+                console.log("User ID:", user.id);
                 orderItemQuantity = req.body.orderItemQuantity;
                 productId = req.params.productId;
                 return [4 /*yield*/, Product.findByPk(productId)];
             case 1:
                 product = _a.sent();
                 if (!product) {
-                    res.status(404).json({ message: "product not found" });
+                    return [2 /*return*/, res.status(404).json({ message: "Product not found" })];
                 }
-                return [4 /*yield*/, Order.findOne({ where: { user_id: user.id } })];
+                console.log("Hellooooooooooooooooo");
+                return [4 /*yield*/, Order.findOne({
+                        where: { user_id: user.id, status: "in_cart" },
+                    })];
             case 2:
                 cart = _a.sent();
-                return [4 /*yield*/, OrderItem.findOne({
-                        where: { productID: productId },
-                    })];
-            case 3:
-                order_item = _a.sent();
-                if (!(!cart || cart.status === 'placed' || cart.status === 'paid' || cart.status === 'canceled')) return [3 /*break*/, 10];
+                if (!!cart) return [3 /*break*/, 4];
                 return [4 /*yield*/, Order.create({
                         user_id: user.id,
                         address_id: null,
-                        status: 'in_cart',
+                        status: "in_cart",
                         total_price: 0,
                         tax: 2,
                     })];
-            case 4:
+            case 3:
+                // If no "in-cart" order exists, create a new one
                 cart = _a.sent();
-                if (!!order_item) return [3 /*break*/, 6];
-                return [4 /*yield*/, OrderItem.create({
-                        quantity: orderItemQuantity,
-                        orderID: cart.id,
-                        productID: productId,
-                        sub_total: product.price * product.discount * orderItemQuantity,
-                    })];
+                _a.label = 4;
+            case 4: return [4 /*yield*/, OrderItem.findOne({
+                    where: { productID: productId, orderID: cart.id },
+                })];
             case 5:
-                //create new item and save it to the db
                 order_item = _a.sent();
-                return [3 /*break*/, 8];
+                if (!order_item) return [3 /*break*/, 7];
+                // If the order item already exists, update its quantity and sub-total
+                order_item.quantity += orderItemQuantity;
+                order_item.sub_total =
+                    (product.price - product.price * (product.discount / 100)) *
+                        order_item.quantity;
+                return [4 /*yield*/, order_item.save()];
             case 6:
-                //update existing item with new quantity
-                order_item = __assign(__assign({}, order_item), { quantity: order_item.quantity + orderItemQuantity });
-                return [4 /*yield*/, OrderItem.update({ quantity: order_item.quantity }, { where: { id: order_item.id } })];
-            case 7:
                 _a.sent();
-                _a.label = 8;
+                return [3 /*break*/, 9];
+            case 7: return [4 /*yield*/, OrderItem.create({
+                    quantity: orderItemQuantity,
+                    orderID: cart.id,
+                    productID: productId,
+                    sub_total: (product.price - product.price * (product.discount / 100)) *
+                        orderItemQuantity,
+                })];
             case 8:
-                //add price of this item to the total price of the cart
-                cart.total_price += order_item.sub_total;
-                return [4 /*yield*/, cart.save()];
-            case 9:
-                _a.sent();
-                console.log("the product added as new orderItem to a new order");
-                res.status(201).json({ message: "the product added as new orderItem to a new order" });
-                return [3 /*break*/, 16];
-            case 10:
-                if (!!order_item) return [3 /*break*/, 12];
-                return [4 /*yield*/, OrderItem.create({
-                        quantity: orderItemQuantity,
-                        orderID: cart.id,
-                        productID: productId,
-                        sub_total: product.price * product.discount * orderItemQuantity,
-                    })];
-            case 11:
-                //create new item and save it to the db
+                // If the order item doesn't exist, create a new one and save it to the database
                 order_item = _a.sent();
-                return [3 /*break*/, 14];
+                _a.label = 9;
+            case 9: return [4 /*yield*/, OrderItem.findAll({
+                    where: { orderID: cart.id },
+                })];
+            case 10:
+                orderItems = _a.sent();
+                newTotalPrice = 0;
+                for (_i = 0, orderItems_1 = orderItems; _i < orderItems_1.length; _i++) {
+                    item = orderItems_1[_i];
+                    newTotalPrice += parseFloat(item.sub_total);
+                    console.log(newTotalPrice);
+                }
+                cart.total_price = newTotalPrice;
+                return [4 /*yield*/, cart.save()
+                    // Update the cart's total_price
+                    //   for (const item of orderItems) {
+                    //   }
+                ];
+            case 11:
+                _a.sent();
+                console.log(cart.total_price);
+                console.log("The product added as an order item to the cart");
+                res.status(201).json({
+                    message: "The product added as an order item to the cart",
+                });
+                return [3 /*break*/, 13];
             case 12:
-                //update existing item with new quantity
-                order_item = __assign(__assign({}, order_item), { quantity: order_item.quantity + orderItemQuantity });
-                return [4 /*yield*/, OrderItem.update({ quantity: order_item.quantity }, { where: { id: order_item.id } })];
-            case 13:
-                _a.sent();
-                _a.label = 14;
-            case 14:
-                //add price of this item to the total price of the cart
-                cart.total_price += order_item.sub_total;
-                return [4 /*yield*/, cart.save()];
-            case 15:
-                _a.sent();
-                console.log("added anew orderItem");
-                res.status(201).json({ message: "product added as new orderItem" });
-                _a.label = 16;
-            case 16: return [3 /*break*/, 18];
-            case 17:
                 error_4 = _a.sent();
                 console.log(error_4);
                 res.status(500).json({ error: "Internal Server Error", details: error_4 });
-                return [3 /*break*/, 18];
-            case 18: return [2 /*return*/];
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
         }
     });
 }); };
 exports.addProductToCart = addProductToCart;
-// price:product.price*product.discount,

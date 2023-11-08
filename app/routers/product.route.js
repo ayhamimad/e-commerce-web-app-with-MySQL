@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
+var passport = require("passport");
 var router = express.Router();
 var productPageController = require("../controllers/productPage.controller");
 var productsController = require("../controllers/products.controller");
@@ -8,5 +9,5 @@ router.get('/', productsController.list);
 router.get('/:productId', productPageController.productInfo);
 router.get('/:productId/related', productPageController.productRelated);
 router.get('/:productId/reviews', productPageController.productReviews);
-router.post('/:productId/add_to_cart', productPageController.addProductToCart);
+router.post('/:productId/add_to_cart', passport.authenticate('jwt', { session: false }), productPageController.addProductToCart);
 exports.default = router;

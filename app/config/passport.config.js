@@ -40,6 +40,8 @@ var passport_jwt_1 = require("passport-jwt");
 var models_1 = require("../models");
 var User = models_1.default.user; // Replace with the actual type you're using for User
 var passport = require('passport');
+var bcrypt = require('bcrypt');
+var passport_local_1 = require("passport-local");
 var jwt_config_1 = require("./jwt.config");
 var opts = {
     jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -51,9 +53,11 @@ passport.use(new passport_jwt_1.Strategy(opts, function (jwt_payload, done) { re
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, User.findOne({ where: { id: jwt_payload.userId } })];
+                console.log('JWT payload:', jwt_payload);
+                return [4 /*yield*/, User.findOne({ where: { id: jwt_payload.id } })];
             case 1:
                 user = _a.sent();
+                console.log('Found user:', user);
                 if (user) {
                     return [2 /*return*/, done(null, user)];
                 }
@@ -68,3 +72,30 @@ passport.use(new passport_jwt_1.Strategy(opts, function (jwt_payload, done) { re
         }
     });
 }); }));
+passport.use(new passport_local_1.Strategy({ usernameField: 'email', passwordField: 'password' }, function (email, password, done) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, isValidPassword, error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, User.findOne({ where: { email: email } })];
+            case 1:
+                user = _a.sent();
+                if (!user) {
+                    return [2 /*return*/, done(null, false, { message: 'Incorrect username.' })];
+                }
+                return [4 /*yield*/, bcrypt.compare(password, user.password)];
+            case 2:
+                isValidPassword = _a.sent();
+                if (!isValidPassword) {
+                    return [2 /*return*/, done(null, false, { message: 'Incorrect password.' })];
+                }
+                return [2 /*return*/, done(null, user)];
+            case 3:
+                error_1 = _a.sent();
+                return [2 /*return*/, done(error_1)];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); }));
+exports.default = passport;
