@@ -170,7 +170,7 @@ var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 12, , 13]);
+                _a.trys.push([0, 13, , 14]);
                 user = req.user;
                 console.log("User ID:", user.id);
                 orderItemQuantity = req.body.orderItemQuantity;
@@ -181,7 +181,10 @@ var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, vo
                 if (!product) {
                     return [2 /*return*/, res.status(404).json({ message: "Product not found" })];
                 }
-                console.log("Hellooooooooooooooooo");
+                // Check if there is enough stock available
+                if (product.stock_quantity < orderItemQuantity) {
+                    return [2 /*return*/, res.status(400).json({ message: "Insufficient stock" })];
+                }
                 return [4 /*yield*/, Order.findOne({
                         where: { user_id: user.id, status: "in_cart" },
                     })];
@@ -225,10 +228,16 @@ var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, vo
                 // If the order item doesn't exist, create a new one and save it to the database
                 order_item = _a.sent();
                 _a.label = 9;
-            case 9: return [4 /*yield*/, OrderItem.findAll({
-                    where: { orderID: cart.id },
-                })];
+            case 9:
+                // Deduct the orderItemQuantity from the product's stock
+                product.stock_quantity -= orderItemQuantity;
+                return [4 /*yield*/, product.save()];
             case 10:
+                _a.sent();
+                return [4 /*yield*/, OrderItem.findAll({
+                        where: { orderID: cart.id },
+                    })];
+            case 11:
                 orderItems = _a.sent();
                 newTotalPrice = 0;
                 for (_i = 0, orderItems_1 = orderItems; _i < orderItems_1.length; _i++) {
@@ -237,25 +246,21 @@ var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, vo
                     console.log(newTotalPrice);
                 }
                 cart.total_price = newTotalPrice;
-                return [4 /*yield*/, cart.save()
-                    // Update the cart's total_price
-                    //   for (const item of orderItems) {
-                    //   }
-                ];
-            case 11:
+                return [4 /*yield*/, cart.save()];
+            case 12:
                 _a.sent();
                 console.log(cart.total_price);
                 console.log("The product added as an order item to the cart");
                 res.status(201).json({
                     message: "The product added as an order item to the cart",
                 });
-                return [3 /*break*/, 13];
-            case 12:
+                return [3 /*break*/, 14];
+            case 13:
                 error_4 = _a.sent();
                 console.log(error_4);
                 res.status(500).json({ error: "Internal Server Error", details: error_4 });
-                return [3 /*break*/, 13];
-            case 13: return [2 /*return*/];
+                return [3 /*break*/, 14];
+            case 14: return [2 /*return*/];
         }
     });
 }); };
