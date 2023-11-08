@@ -11,10 +11,9 @@ var orderModel = function (sequelize) {
         },
         address_id: {
             type: sequelize_1.DataTypes.INTEGER,
-            allowNull: false,
         },
         status: {
-            type: sequelize_1.DataTypes.ENUM('in_cart', 'processing', 'paid', 'canceled'),
+            type: sequelize_1.DataTypes.ENUM('in_cart', 'placed', 'paid', 'canceled'),
             allowNull: false,
         },
         total_price: {

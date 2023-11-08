@@ -11,10 +11,10 @@ const orderModel = (sequelize: Sequelize) => {
     },
     address_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+
     },
     status: {
-      type: DataTypes.ENUM('in_cart', 'processing', 'paid', 'canceled'),
+      type: DataTypes.ENUM('in_cart', 'placed', 'paid', 'canceled'),
       allowNull: false,
     },
     total_price: {
