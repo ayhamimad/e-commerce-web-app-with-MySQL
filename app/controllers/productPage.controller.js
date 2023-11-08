@@ -47,13 +47,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.productReviews = exports.productRelated = exports.productInfo = void 0;
+exports.addProductToCart = exports.productReviews = exports.productRelated = exports.productInfo = void 0;
 var models_1 = require("../models");
 var sequelize_1 = require("sequelize");
 var Product = models_1.default.product;
 var Reviews = models_1.default.review;
 var User = models_1.default.user;
-// get the product information 
+var Order = models_1.default.order;
+var OrderItem = models_1.default.order_item;
+// get the product information
 var productInfo = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var productId, product, count, productInfo_1, error_1;
     return __generator(this, function (_a) {
@@ -65,23 +67,25 @@ var productInfo = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 return [4 /*yield*/, Product.findByPk(productId)];
             case 1:
                 product = _a.sent();
-                return [4 /*yield*/, Reviews.findAndCountAll({ where: { product_id: productId } })];
+                return [4 /*yield*/, Reviews.findAndCountAll({
+                        where: { product_id: productId },
+                    })];
             case 2:
                 count = (_a.sent()).count;
                 if (product) {
                     productInfo_1 = __assign(__assign({}, product.toJSON()), { ratingCount: count });
-                    res.status(200).json({ product: productInfo_1 });
+                    res.status(200).json({ products: productInfo_1 });
                 }
                 else {
                     res.status(404).json({
-                        message: "product not found"
+                        message: "product not found",
                     });
                 }
                 return [3 /*break*/, 4];
             case 3:
                 error_1 = _a.sent();
                 console.log(error_1);
-                res.status(500).json({ error: 'Internal Server Error', details: error_1 });
+                res.status(500).json({ error: "Internal Server Error", details: error_1 });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -101,7 +105,7 @@ var productRelated = function (req, res) { return __awaiter(void 0, void 0, void
             case 1:
                 randomProducts = _a.sent();
                 if (randomProducts.length > 0) {
-                    res.status(200).json(randomProducts);
+                    res.status(200).json({ products: randomProducts });
                 }
                 else {
                     res.status(404).json({ message: "No products found" });
@@ -110,7 +114,7 @@ var productRelated = function (req, res) { return __awaiter(void 0, void 0, void
             case 2:
                 error_2 = _a.sent();
                 console.log(error_2);
-                res.status(500).json({ error: 'Internal Server Error', details: error_2 });
+                res.status(500).json({ error: "Internal Server Error", details: error_2 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -130,7 +134,12 @@ var productReviews = function (req, res) { return __awaiter(void 0, void 0, void
                         include: [
                             {
                                 model: User,
-                                attributes: [[sequelize_1.Sequelize.fn('CONCAT', sequelize_1.Sequelize.col('first_name'), ' ', sequelize_1.Sequelize.col('last_name')), 'full_name']],
+                                attributes: [
+                                    [
+                                        sequelize_1.Sequelize.fn("CONCAT", sequelize_1.Sequelize.col("first_name"), " ", sequelize_1.Sequelize.col("last_name")),
+                                        "full_name",
+                                    ],
+                                ],
                             },
                         ],
                     })];
@@ -140,17 +149,114 @@ var productReviews = function (req, res) { return __awaiter(void 0, void 0, void
                     res.status(200).json({ reviews: reviews });
                 }
                 else {
-                    res.status(404).json({ message: "There is no reviews for this product ".concat(productId) });
+                    res
+                        .status(404)
+                        .json({ message: "There is no reviews for this product ".concat(productId) });
                 }
                 return [3 /*break*/, 3];
             case 2:
                 error_3 = _a.sent();
                 console.log(error_3);
-                res.status(500).json({ error: 'Internal Server Error', details: error_3 });
+                res.status(500).json({ error: "Internal Server Error", details: error_3 });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.productReviews = productReviews;
-// export const addProductToCart helooooo how are you 
+// create an order if it doesn't exist and if it's status not in_cart
+var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, orderItemQuantity, productId, product, cart, order_item, orderItems, newTotalPrice, _i, orderItems_1, item, error_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 12, , 13]);
+                user = req.user;
+                console.log("User ID:", user.id);
+                orderItemQuantity = req.body.orderItemQuantity;
+                productId = req.params.productId;
+                return [4 /*yield*/, Product.findByPk(productId)];
+            case 1:
+                product = _a.sent();
+                if (!product) {
+                    return [2 /*return*/, res.status(404).json({ message: "Product not found" })];
+                }
+                console.log("Hellooooooooooooooooo");
+                return [4 /*yield*/, Order.findOne({
+                        where: { user_id: user.id, status: "in_cart" },
+                    })];
+            case 2:
+                cart = _a.sent();
+                if (!!cart) return [3 /*break*/, 4];
+                return [4 /*yield*/, Order.create({
+                        user_id: user.id,
+                        address_id: null,
+                        status: "in_cart",
+                        total_price: 0,
+                        tax: 2,
+                    })];
+            case 3:
+                // If no "in-cart" order exists, create a new one
+                cart = _a.sent();
+                _a.label = 4;
+            case 4: return [4 /*yield*/, OrderItem.findOne({
+                    where: { productID: productId, orderID: cart.id },
+                })];
+            case 5:
+                order_item = _a.sent();
+                if (!order_item) return [3 /*break*/, 7];
+                // If the order item already exists, update its quantity and sub-total
+                order_item.quantity += orderItemQuantity;
+                order_item.sub_total =
+                    (product.price - product.price * (product.discount / 100)) *
+                        order_item.quantity;
+                return [4 /*yield*/, order_item.save()];
+            case 6:
+                _a.sent();
+                return [3 /*break*/, 9];
+            case 7: return [4 /*yield*/, OrderItem.create({
+                    quantity: orderItemQuantity,
+                    orderID: cart.id,
+                    productID: productId,
+                    sub_total: (product.price - product.price * (product.discount / 100)) *
+                        orderItemQuantity,
+                })];
+            case 8:
+                // If the order item doesn't exist, create a new one and save it to the database
+                order_item = _a.sent();
+                _a.label = 9;
+            case 9: return [4 /*yield*/, OrderItem.findAll({
+                    where: { orderID: cart.id },
+                })];
+            case 10:
+                orderItems = _a.sent();
+                newTotalPrice = 0;
+                for (_i = 0, orderItems_1 = orderItems; _i < orderItems_1.length; _i++) {
+                    item = orderItems_1[_i];
+                    newTotalPrice += parseFloat(item.sub_total);
+                    console.log(newTotalPrice);
+                }
+                cart.total_price = newTotalPrice;
+                return [4 /*yield*/, cart.save()
+                    // Update the cart's total_price
+                    //   for (const item of orderItems) {
+                    //   }
+                ];
+            case 11:
+                _a.sent();
+                console.log(cart.total_price);
+                console.log("The product added as an order item to the cart");
+                res.status(201).json({
+                    message: "The product added as an order item to the cart",
+                });
+                return [3 /*break*/, 13];
+            case 12:
+                error_4 = _a.sent();
+                console.log(error_4);
+                res.status(500).json({ error: "Internal Server Error", details: error_4 });
+                return [3 /*break*/, 13];
+            case 13: return [2 /*return*/];
+        }
+    });
+}); };
+exports.addProductToCart = addProductToCart;

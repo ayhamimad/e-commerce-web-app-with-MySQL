@@ -7,14 +7,16 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { jwtConfig } from './jwt.config';
 
 const opts: StrategyOptions = {
- jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
+ jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
  secretOrKey: jwtConfig.secret,
 };
 
 passport.use(
  new JwtStrategy(opts, async (jwt_payload, done) => {
     try {
-      const user = await User.findOne({ where: { id: jwt_payload.sub } });
+      console.log('JWT payload:', jwt_payload);
+      const user = await User.findOne({ where: { id: jwt_payload.id } });
+      console.log('Found user:', user);
       if (user) {
         return done(null, user);
       } else {

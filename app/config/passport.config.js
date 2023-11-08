@@ -44,7 +44,7 @@ var bcrypt = require('bcrypt');
 var passport_local_1 = require("passport-local");
 var jwt_config_1 = require("./jwt.config");
 var opts = {
-    jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
+    jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: jwt_config_1.jwtConfig.secret,
 };
 passport.use(new passport_jwt_1.Strategy(opts, function (jwt_payload, done) { return __awaiter(void 0, void 0, void 0, function () {
@@ -53,9 +53,11 @@ passport.use(new passport_jwt_1.Strategy(opts, function (jwt_payload, done) { re
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, User.findOne({ where: { id: jwt_payload.sub } })];
+                console.log('JWT payload:', jwt_payload);
+                return [4 /*yield*/, User.findOne({ where: { id: jwt_payload.id } })];
             case 1:
                 user = _a.sent();
+                console.log('Found user:', user);
                 if (user) {
                     return [2 /*return*/, done(null, user)];
                 }
