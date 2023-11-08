@@ -1,8 +1,9 @@
 {
   "dependencies": {
-    "@types/bcrypt": "^5.0.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/passport-jwt": "^3.0.12",
+    "@types/passport-local": "^1.0.38",
     "@types/sequelize": "^4.28.17",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",

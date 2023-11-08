@@ -4,6 +4,8 @@ const bodyParser =  require('body-parser');
 const cors = require ('cors');
 import db from './app/models';
 import productRouter from "./app/routers/product.route";
+import loginRouter from "./app/routers/login.route"
+// const app:Application=require("../dist/server");
 const passport = require('passport'); // Import Passport.js
 import './app/config/passport.config'; 
 
@@ -16,9 +18,10 @@ app.use(express.static('assets'));
 
 app.use(passport.initialize()); // Initialize Passport.js
 
-db.sequelize.sync();   //{alter: true} remove it because we make the change and we don't need it dsad
+db.sequelize.sync({alter: true});    //remove it because we make the change and we don't need it dsad
 
 app.use('/api/v1/products', productRouter);
+app.use('/api/v1/login', loginRouter);
 
 const Port = process.env.PORT || 3000;
 app.listen(Port, () => {
