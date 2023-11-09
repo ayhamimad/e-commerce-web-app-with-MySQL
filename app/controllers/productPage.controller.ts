@@ -172,8 +172,7 @@ export const addProductToCart = async (req: Request, res: Response) => {
   
       console.log("The product added as an order item to the cart");
       res.status(201).json({
-        message: "The product added as an order item to the cart",
-      });
+        message: "The product added as an order item to the cart", cart:cart});
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Internal Server Error", details: error });
