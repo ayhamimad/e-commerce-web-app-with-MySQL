@@ -252,7 +252,7 @@ var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, vo
                 console.log(cart.total_price);
                 console.log("The product added as an order item to the cart");
                 res.status(201).json({
-                    message: "The product added as an order item to the cart",
+                    message: "The product added as an order item to the cart", cart: cart
                 });
                 return [3 /*break*/, 14];
             case 13:
