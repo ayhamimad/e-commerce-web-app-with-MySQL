@@ -20,7 +20,7 @@ app.use(express.static('assets'));
 
 app.use(passport.initialize()); // Initialize Passport.js
 
-//db.sequelize.sync({force: true});   // remove it because we make the change and we don't need it dsad
+//db.sequelize.sync({alter: true});   // remove it because we make the change and we don't need it dsad
 
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/login', loginRouter);

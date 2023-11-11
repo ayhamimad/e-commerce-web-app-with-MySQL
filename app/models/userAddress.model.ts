@@ -24,8 +24,20 @@ const Address = sequelize.define('user_address', {
       allowNull: false,
     },
   
-    location: {
-      type: DataTypes.STRING,
+    street: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    pin_code: {
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   });

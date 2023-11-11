@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('assets'));
 app.use(passport.initialize()); // Initialize Passport.js
-//db.sequelize.sync({force: true});   // remove it because we make the change and we don't need it dsad
+//db.sequelize.sync({alter: true});   // remove it because we make the change and we don't need it dsad
 app.use('/api/v1/products', product_route_1.default);
 app.use('/api/v1/login', login_route_1.default);
 app.use('/api/v1/orders', order_route_1.default);
