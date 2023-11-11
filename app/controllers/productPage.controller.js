@@ -209,7 +209,7 @@ var addProductToCart = function (req, res) { return __awaiter(void 0, void 0, vo
                 order_item = _a.sent();
                 if (!order_item) return [3 /*break*/, 7];
                 // If the order item already exists, update its quantity and sub-total
-                order_item.quantity += orderItemQuantity;
+                order_item.quantity = orderItemQuantity;
                 order_item.sub_total =
                     (product.price - product.price * (product.discount / 100)) *
                         order_item.quantity;

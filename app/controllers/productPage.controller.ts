@@ -132,7 +132,7 @@ export const addProductToCart = async (req: Request, res: Response) => {
   
       if (order_item) {
         // If the order item already exists, update its quantity and sub-total
-        order_item.quantity += orderItemQuantity;
+        order_item.quantity = orderItemQuantity;
         order_item.sub_total =
           (product.price - product.price * (product.discount / 100)) *
           order_item.quantity;
