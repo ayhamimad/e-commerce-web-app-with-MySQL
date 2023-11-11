@@ -18,7 +18,7 @@ app.use(passport.initialize()); // Initialize Passport.js
 //db.sequelize.sync({force: true});   // remove it because we make the change and we don't need it dsad
 app.use('/api/v1/products', product_route_1.default);
 app.use('/api/v1/login', login_route_1.default);
-app.use('/api/v1/order', order_route_1.default);
+app.use('/api/v1/orders', order_route_1.default);
 var Port = process.env.PORT || 3000;
 app.listen(Port, function () {
     console.log("Server is running on ".concat(Port));

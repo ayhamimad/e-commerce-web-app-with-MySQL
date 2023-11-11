@@ -56,8 +56,15 @@ export const deleteOrderItem = async (req: Request, res: Response) => {
         });
     }
 
+    // Get the sub_total of the order item to be removed
+    const removedSubTotal = orderItem.sub_total;
+
     // Remove the order item from the order item table
     await orderItem.destroy();
+
+    // Subtract the removed sub_total from the total_price in the order table
+    const updatedTotalPrice = associatedOrder.total_price - removedSubTotal;
+    await associatedOrder.update({ total_price: updatedTotalPrice });
 
     return res
       .status(200)
@@ -70,3 +77,4 @@ export const deleteOrderItem = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error", details: error });
   }
 };
+
