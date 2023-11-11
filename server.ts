@@ -24,7 +24,7 @@ app.use(passport.initialize()); // Initialize Passport.js
 
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/login', loginRouter);
-app.use('/api/v1/order',orderRouter);
+app.use('/api/v1/orders',orderRouter);
 
 const Port = process.env.PORT || 3000;
 app.listen(Port, () => {

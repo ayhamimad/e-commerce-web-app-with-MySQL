@@ -77,11 +77,11 @@ var placeOrder = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.placeOrder = placeOrder;
 var deleteOrderItem = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var orderItemId, user, orderItem, associatedOrder, error_2;
+    var orderItemId, user, orderItem, associatedOrder, removedSubTotal, updatedTotalPrice, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 4, , 5]);
+                _a.trys.push([0, 5, , 6]);
                 orderItemId = req.params.orderItemId;
                 user = req.user;
                 return [4 /*yield*/, OrderItem.findByPk(orderItemId)];
@@ -101,10 +101,15 @@ var deleteOrderItem = function (req, res) { return __awaiter(void 0, void 0, voi
                             message: "Unauthorized: Order item does not belong to the user",
                         })];
                 }
+                removedSubTotal = orderItem.sub_total;
                 // Remove the order item from the order item table
                 return [4 /*yield*/, orderItem.destroy()];
             case 3:
                 // Remove the order item from the order item table
+                _a.sent();
+                updatedTotalPrice = associatedOrder.total_price - removedSubTotal;
+                return [4 /*yield*/, associatedOrder.update({ total_price: updatedTotalPrice })];
+            case 4:
                 _a.sent();
                 return [2 /*return*/, res
                         .status(200)
@@ -112,12 +117,12 @@ var deleteOrderItem = function (req, res) { return __awaiter(void 0, void 0, voi
                         message: "Order item removed successfully",
                         order_item: orderItem,
                     })];
-            case 4:
+            case 5:
                 error_2 = _a.sent();
                 console.log(error_2);
                 res.status(500).json({ error: "Internal Server Error", details: error_2 });
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); };

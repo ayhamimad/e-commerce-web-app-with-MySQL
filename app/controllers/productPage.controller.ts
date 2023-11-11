@@ -22,7 +22,7 @@ export const productInfo = async (req: Request, res: Response) => {
         ...product.toJSON(), // Converts the Sequelize model to a plain JavaScript object
         ratingCount: count,
       };
-      res.status(200).json({ products: productInfo });
+      res.status(200).json(productInfo);
     } else {
       res.status(404).json({
         message: "product not found",

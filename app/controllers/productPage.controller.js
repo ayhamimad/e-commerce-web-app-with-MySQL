@@ -74,7 +74,7 @@ var productInfo = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 count = (_a.sent()).count;
                 if (product) {
                     productInfo_1 = __assign(__assign({}, product.toJSON()), { ratingCount: count });
-                    res.status(200).json({ products: productInfo_1 });
+                    res.status(200).json(productInfo_1);
                 }
                 else {
                     res.status(404).json({
