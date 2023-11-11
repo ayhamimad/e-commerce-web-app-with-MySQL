@@ -12,6 +12,7 @@ export const dbConfig = {
     }
   };
 
+
   // export const dbConfig = {
   //   HOST: "localhost",
   //   USER: "root", // Replace with your MySQL username

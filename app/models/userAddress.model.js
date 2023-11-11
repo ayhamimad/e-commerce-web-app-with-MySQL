@@ -22,8 +22,20 @@ var userAddressModel = function (sequelize) {
             type: sequelize_1.DataTypes.STRING,
             allowNull: false,
         },
-        location: {
-            type: sequelize_1.DataTypes.STRING,
+        street: {
+            type: sequelize_1.DataTypes.TEXT,
+            allowNull: false,
+        },
+        state: {
+            type: sequelize_1.DataTypes.TEXT,
+            allowNull: false,
+        },
+        city: {
+            type: sequelize_1.DataTypes.TEXT,
+            allowNull: false,
+        },
+        pin_code: {
+            type: sequelize_1.DataTypes.TEXT,
             allowNull: false,
         },
     });
