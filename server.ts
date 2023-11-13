@@ -6,8 +6,9 @@ import db from './app/models';
 import productRouter from "./app/routers/product.route";
 import loginRouter from "./app/routers/login.route"
 import orderRouter from "./app/routers/order.route"
+import userRouter from "./app/routers/user.route"
 import addressRouter from "./app/routers/address.route"
-// const app:Application=require("../dist/server");
+
 const passport = require('passport'); // Import Passport.js
 import './app/config/passport.config'; 
 
@@ -25,6 +26,7 @@ app.use(passport.initialize()); // Initialize Passport.js
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/orders',orderRouter);
+app.use('/api/v1/users',userRouter);
 app.use('/api/v1/addresses', addressRouter)
 const Port = process.env.PORT || 3000;
 app.listen(Port, () => {
