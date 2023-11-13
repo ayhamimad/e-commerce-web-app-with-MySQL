@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,8 +47,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOrderItem = exports.changeOrderStatusAndPutAddress = void 0;
+exports.getInProgress = exports.deleteOrderItem = exports.changeOrderStatusAndPutAddress = void 0;
 var models_1 = require("../models");
+var jwt = require("jsonwebtoken");
 var Order = models_1.default.order;
 var User = models_1.default.user;
 var OrderItem = models_1.default.order_item;
@@ -221,3 +233,65 @@ var deleteOrderItem = function (req, res) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.deleteOrderItem = deleteOrderItem;
+var getInProgress = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, decodedToken, order, items, itemsWithImage, totalDiscount, i, product, itemWithImage, totalItemDiscount, err_1;
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 7, , 8]);
+                token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.replace('Bearer ', '');
+                if (!token) {
+                    return [2 /*return*/, res.status(401).json({ message: 'Unauthorized' })];
+                }
+                decodedToken = jwt.verify(token, 'top-secret');
+                return [4 /*yield*/, Order.findOne({
+                        where: {
+                            user_id: decodedToken.id,
+                            status: "in_cart"
+                        }
+                    })];
+            case 1:
+                order = _b.sent();
+                if (!order) {
+                    return [2 /*return*/, res.status(404).send("No orders found")];
+                }
+                return [4 /*yield*/, OrderItem.findAll({
+                        where: {
+                            orderID: order.id
+                        }
+                    })];
+            case 2:
+                items = _b.sent();
+                itemsWithImage = [];
+                totalDiscount = 0;
+                i = 0;
+                _b.label = 3;
+            case 3:
+                if (!(i < items.length)) return [3 /*break*/, 6];
+                return [4 /*yield*/, Product.findByPk(items[i].productID)];
+            case 4:
+                product = _b.sent();
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url });
+                totalItemDiscount = items[i].quantity * product.price * product.discount / 100;
+                totalDiscount = totalDiscount + totalItemDiscount;
+                itemsWithImage.push(itemWithImage);
+                _b.label = 5;
+            case 5:
+                i++;
+                return [3 /*break*/, 3];
+            case 6: return [2 /*return*/, res.status(200).json({
+                    data: itemsWithImage,
+                    total_price: order.total_price,
+                    total_discount: totalDiscount
+                })];
+            case 7:
+                err_1 = _b.sent();
+                console.log(err_1);
+                res.status(500).send("Server Error");
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getInProgress = getInProgress;
