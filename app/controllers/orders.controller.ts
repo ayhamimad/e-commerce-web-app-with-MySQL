@@ -1,5 +1,6 @@
 import db from "../models";
 import { Request, Response } from "express";
+import * as jwt from 'jsonwebtoken';
 import { Op, Sequelize } from "sequelize";
 const Order = db.order;
 const User = db.user;
@@ -175,3 +176,54 @@ export const deleteOrderItem = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error", details: error });
   }
 };
+
+
+export const getInProgress =async (req:Request, res: Response) => {
+  try{
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const decodedToken: any = jwt.verify(token, 'top-secret');
+    let order = await Order.findOne({
+      where:
+      {
+        user_id: decodedToken.id,
+        status:"in_cart"
+      }
+    });
+    if(!order){
+      return res.status(404).send("No orders found");
+    }
+    
+    let items = await OrderItem.findAll({
+      where:{
+        orderID: order.id
+      }
+    });
+    let itemsWithImage = [];
+
+    var totalDiscount = 0;
+    for(let i=0;i<items.length;i++){
+      let product = await Product.findByPk(items[i].productID);
+      let itemWithImage = {
+        ...items[i].toJSON(), // Copy existing properties from OrderItem
+        image: product.image_url
+      };
+      let totalItemDiscount = items[i].quantity * product.price * product.discount/100;
+      totalDiscount = totalDiscount + totalItemDiscount;
+      itemsWithImage.push(itemWithImage);
+    }
+      return res.status(200).json({
+        data: itemsWithImage,
+        total_price: order.total_price,
+        total_discount: totalDiscount
+        })
+  }catch(err){
+    console.log(err);
+    res.status(500).send("Server Error");
+  }
+}
+     
+

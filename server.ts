@@ -8,7 +8,9 @@ import loginRouter from "./app/routers/login.route"
 import orderRouter from "./app/routers/order.route"
 import userRouter from "./app/routers/user.route"
 import addressRouter from "./app/routers/address.route"
-
+import brandRouter from "./app/routers/brand.route";
+import categoryRouter from "./app/routers/category.route"
+// const app:Application=require("../dist/server");
 const passport = require('passport'); // Import Passport.js
 import './app/config/passport.config'; 
 
@@ -27,8 +29,12 @@ app.use('/api/v1/products', productRouter);
 app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/orders',orderRouter);
 app.use('/api/v1/users',userRouter);
-app.use('/api/v1/addresses', addressRouter)
+app.use('/api/v1/addresses', addressRouter);
+app.use('/api/v1/brands', brandRouter)
+app.use('/api/v1/categories', categoryRouter)
+
 const Port = process.env.PORT || 3000;
 app.listen(Port, () => {
-    console.log(`Server is   running on ${Port}`);
+    console.log(`Server is running on ${Port}`);
 });
+

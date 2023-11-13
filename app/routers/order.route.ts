@@ -5,6 +5,7 @@ import * as ordersController from "../controllers/orders.controller"
 const router = express.Router();
 //import* as ordersController from '../controllers/orders.controller'
 
-router.put('/:orderId',passport.authenticate('jwt', { session: false }),ordersController.changeOrderStatusAndPutAddress);
-router.delete('/order_items/:orderItemId',passport.authenticate('jwt', { session: false }),ordersController.deleteOrderItem); 
+router.put('/:orderId', passport.authenticate('jwt', { session: false }), ordersController.changeOrderStatusAndPutAddress);
+router.delete('/order_items/:orderItemId', passport.authenticate('jwt', { session: false }), ordersController.deleteOrderItem); 
+router.get('/in_progress', passport.authenticate('jwt', { session: false }), ordersController.getInProgress);
 export default router;
