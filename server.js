@@ -8,7 +8,6 @@ var login_route_1 = require("./app/routers/login.route");
 var order_route_1 = require("./app/routers/order.route");
 var user_route_1 = require("./app/routers/user.route");
 var address_route_1 = require("./app/routers/address.route");
-// const app:Application=require("../dist/server");
 var passport = require('passport'); // Import Passport.js
 require("./app/config/passport.config");
 var app = express();
