@@ -36,93 +36,187 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteOrderItem = exports.placeOrder = void 0;
+exports.deleteOrderItem = exports.changeOrderStatusAndPutAddress = void 0;
 var models_1 = require("../models");
 var Order = models_1.default.order;
 var User = models_1.default.user;
 var OrderItem = models_1.default.order_item;
-var placeOrder = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, orderId, order, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var Product = models_1.default.product;
+var changeOrderStatusAndPutAddress = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, orderId, _a, addressId, orderItems, order, _loop_1, _i, orderItems_1, incomingOrderItem, error_1;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
+                _b.trys.push([0, 7, , 8]);
                 user = req.user;
                 orderId = req.params.orderId;
+                _a = req.body, addressId = _a.addressId, orderItems = _a.orderItems;
                 return [4 /*yield*/, Order.findOne({
                         where: { user_id: user.id, id: orderId },
+                        include: OrderItem,
                     })];
             case 1:
-                order = _a.sent();
+                order = _b.sent();
                 if (!order) {
                     return [2 /*return*/, res.status(404).json({ message: "Order not found" })];
                 }
+                // Check if an address is provided
+                if (addressId) {
+                    // Update the order's address ID
+                    order.address_id = addressId;
+                    // Set the order status to "paid"
+                    order.status = "paid";
+                }
+                if (!(orderItems && Array.isArray(orderItems))) return [3 /*break*/, 5];
                 // Update the order status to "placed"
                 order.status = "placed";
-                return [4 /*yield*/, order.save()];
+                _loop_1 = function (incomingOrderItem) {
+                    var existingOrderItem, product, quantityDifference, updatedStockQuantity, updatedTotalPrice;
+                    return __generator(this, function (_c) {
+                        switch (_c.label) {
+                            case 0:
+                                existingOrderItem = order.order_items.find(function (item) { return item.id === incomingOrderItem.id; });
+                                if (!existingOrderItem) {
+                                    console.log("Order item with ID ".concat(incomingOrderItem.id, " not found in the order."));
+                                    return [2 /*return*/, "continue"];
+                                }
+                                if (!(incomingOrderItem.quantity !== existingOrderItem.quantity)) return [3 /*break*/, 5];
+                                return [4 /*yield*/, Product.findByPk(existingOrderItem.productID)];
+                            case 1:
+                                product = _c.sent();
+                                if (!product) {
+                                    console.log("Product not found for order item ID ".concat(existingOrderItem.id));
+                                    return [2 /*return*/, "continue"];
+                                }
+                                quantityDifference = incomingOrderItem.quantity - existingOrderItem.quantity;
+                                updatedStockQuantity = product.stock_quantity - quantityDifference;
+                                return [4 /*yield*/, product.update({ stock_quantity: updatedStockQuantity })];
+                            case 2:
+                                _c.sent();
+                                // Update order item quantity
+                                existingOrderItem.quantity = incomingOrderItem.quantity;
+                                // Calculate the new sub_total for the order item
+                                existingOrderItem.sub_total =
+                                    existingOrderItem.quantity * product.price;
+                                // Save the order item changes
+                                return [4 /*yield*/, existingOrderItem.save()];
+                            case 3:
+                                // Save the order item changes
+                                _c.sent();
+                                updatedTotalPrice = order.order_items.reduce(function (total, item) { return total + item.sub_total; }, 0);
+                                // Update order total_price
+                                return [4 /*yield*/, order.update({ total_price: updatedTotalPrice })];
+                            case 4:
+                                // Update order total_price
+                                _c.sent();
+                                _c.label = 5;
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                };
+                _i = 0, orderItems_1 = orderItems;
+                _b.label = 2;
             case 2:
-                _a.sent();
+                if (!(_i < orderItems_1.length)) return [3 /*break*/, 5];
+                incomingOrderItem = orderItems_1[_i];
+                return [5 /*yield**/, _loop_1(incomingOrderItem)];
+            case 3:
+                _b.sent();
+                _b.label = 4;
+            case 4:
+                _i++;
+                return [3 /*break*/, 2];
+            case 5: 
+            // Save the order changes
+            return [4 /*yield*/, order.save()];
+            case 6:
+                // Save the order changes
+                _b.sent();
                 res
                     .status(200)
                     .json({ message: "Order placed successfully", order: order });
-                return [3 /*break*/, 4];
-            case 3:
-                error_1 = _a.sent();
+                return [3 /*break*/, 8];
+            case 7:
+                error_1 = _b.sent();
                 console.log(error_1);
                 res.status(500).json({ error: "Internal Server Error", details: error_1 });
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
         }
     });
 }); };
-exports.placeOrder = placeOrder;
+exports.changeOrderStatusAndPutAddress = changeOrderStatusAndPutAddress;
+//////////////////////////////////////////////////////////////////////////////////
 var deleteOrderItem = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var orderItemId, user, orderItem, associatedOrder, removedSubTotal, updatedTotalPrice, error_2;
+    var orderItemId, user, orderItem, associatedOrder, removedSubTotal, removedQuantity, associatedProduct, updatedStockQuantity, remainingOrderItems, updatedTotalPrice, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
+                _a.trys.push([0, 10, , 11]);
                 orderItemId = req.params.orderItemId;
                 user = req.user;
-                return [4 /*yield*/, OrderItem.findByPk(orderItemId)];
+                return [4 /*yield*/, OrderItem.findByPk(orderItemId, {
+                        include: Product,
+                    })];
             case 1:
                 orderItem = _a.sent();
-                if (!orderItem) {
-                    return [2 /*return*/, res.status(404).json({ message: "Order item not found" })];
+                console.log(orderItem.product);
+                if (!orderItem || !orderItem.product) {
+                    return [2 /*return*/, res
+                            .status(404)
+                            .json({ message: "Order item or associated product not found" })];
                 }
                 return [4 /*yield*/, Order.findByPk(orderItem.orderID)];
             case 2:
                 associatedOrder = _a.sent();
                 // Check if the order item belongs to the authenticated user
                 if (!associatedOrder || associatedOrder.user_id !== user.id) {
-                    return [2 /*return*/, res
-                            .status(403)
-                            .json({
+                    return [2 /*return*/, res.status(403).json({
                             message: "Unauthorized: Order item does not belong to the user",
                         })];
                 }
                 removedSubTotal = orderItem.sub_total;
-                // Remove the order item from the order item table
-                return [4 /*yield*/, orderItem.destroy()];
+                removedQuantity = orderItem.quantity;
+                console.log(removedQuantity);
+                associatedProduct = orderItem.product;
+                if (!associatedProduct) return [3 /*break*/, 4];
+                updatedStockQuantity = associatedProduct.stock_quantity + removedQuantity;
+                return [4 /*yield*/, associatedProduct.update({ stock_quantity: updatedStockQuantity })];
             case 3:
+                _a.sent();
+                _a.label = 4;
+            case 4: 
+            // Remove the order item from the order item table
+            return [4 /*yield*/, orderItem.destroy()];
+            case 5:
                 // Remove the order item from the order item table
                 _a.sent();
+                return [4 /*yield*/, OrderItem.count({
+                        where: {
+                            orderID: associatedOrder.id,
+                        },
+                    })];
+            case 6:
+                remainingOrderItems = _a.sent();
+                if (!(remainingOrderItems === 0)) return [3 /*break*/, 8];
+                return [4 /*yield*/, associatedOrder.destroy()];
+            case 7:
+                _a.sent();
+                return [2 /*return*/, res.status(200).json({
+                        message: "Order and all order items removed successfully",
+                    })];
+            case 8:
                 updatedTotalPrice = associatedOrder.total_price - removedSubTotal;
                 return [4 /*yield*/, associatedOrder.update({ total_price: updatedTotalPrice })];
-            case 4:
+            case 9:
                 _a.sent();
-                return [2 /*return*/, res
-                        .status(200)
-                        .json({
-                        message: "Order item removed successfully",
-                        order_item: orderItem,
-                    })];
-            case 5:
+                return [2 /*return*/, res.status(200).json({ message: "Order item removed successfully" })];
+            case 10:
                 error_2 = _a.sent();
                 console.log(error_2);
                 res.status(500).json({ error: "Internal Server Error", details: error_2 });
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 11];
+            case 11: return [2 /*return*/];
         }
     });
 }); };

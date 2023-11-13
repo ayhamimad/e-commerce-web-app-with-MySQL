@@ -53,11 +53,9 @@ passport.use(new passport_jwt_1.Strategy(opts, function (jwt_payload, done) { re
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                console.log('JWT payload:', jwt_payload);
                 return [4 /*yield*/, User.findOne({ where: { id: jwt_payload.id } })];
             case 1:
                 user = _a.sent();
-                console.log('Found user:', user);
                 if (user) {
                     return [2 /*return*/, done(null, user)];
                 }
