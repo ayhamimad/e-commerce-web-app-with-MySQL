@@ -7,5 +7,5 @@ const router = express.Router();
 
 router.put('/:orderId', passport.authenticate('jwt', { session: false }), ordersController.changeOrderStatusAndPutAddress);
 router.delete('/order_items/:orderItemId', passport.authenticate('jwt', { session: false }), ordersController.deleteOrderItem); 
-router.get('/in_progress', passport.authenticate('jwt', { session: false }), ordersController.getInProgress);
+router.get('/in_cart', passport.authenticate('jwt', { session: false }), ordersController.getInProgress);
 export default router;

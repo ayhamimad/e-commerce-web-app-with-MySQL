@@ -96,4 +96,37 @@ passport.use(new passport_local_1.Strategy({ usernameField: 'email', passwordFie
         }
     });
 }); }));
+passport.use('local-signup', new passport_local_1.Strategy({ usernameField: 'email', passwordField: 'password', passReqToCallback: true }, function (req, email, password, done) { return __awaiter(void 0, void 0, void 0, function () {
+    var existingUser, _a, first_name, last_name, phone_number, newUser, _b, error_2;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _c.trys.push([0, 4, , 5]);
+                return [4 /*yield*/, User.findOne({ where: { email: email } })];
+            case 1:
+                existingUser = _c.sent();
+                if (existingUser) {
+                    return [2 /*return*/, done(null, false, { message: 'That email is already taken.' })];
+                }
+                _a = req.body, first_name = _a.first_name, last_name = _a.last_name, phone_number = _a.phone_number;
+                newUser = new User();
+                newUser.email = email;
+                _b = newUser;
+                return [4 /*yield*/, bcrypt.hash(password, 10)];
+            case 2:
+                _b.password = _c.sent(); // Hash the password
+                newUser.first_name = first_name;
+                newUser.last_name = last_name;
+                newUser.phone_number = phone_number;
+                return [4 /*yield*/, newUser.save()];
+            case 3:
+                _c.sent();
+                return [2 /*return*/, done(null, newUser)];
+            case 4:
+                error_2 = _c.sent();
+                return [2 /*return*/, done(error_2)];
+            case 5: return [2 /*return*/];
+        }
+    });
+}); }));
 exports.default = passport;
