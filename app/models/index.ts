@@ -8,6 +8,7 @@ import productModel from './products.model';
 import reviewsModel from './reviews.model';
 import userModel from './user.model';
 import userAddressModel from './userAddress.model';
+import wishlistModel from './wishlist.model';
 //initializes a new Sequelize instance connecting to a database using the configuration parameters stored in the bookConfig object
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
@@ -36,6 +37,7 @@ db.product = productModel(sequelize);
 db.review = reviewsModel(sequelize);
 db.user = userModel(sequelize);
 db.user_address = userAddressModel(sequelize);
+db.wishlist = wishlistModel(sequelize);
 
 db.product.belongsTo(db.brand, { foreignKey: 'brandID' });
 db.product.belongsTo(db.category, { foreignKey: 'categoryID' });
@@ -47,5 +49,8 @@ db.user.hasMany(db.user_address, { foreignKey: 'user_id' });
 db.order.hasMany(db.order_item, { foreignKey: 'orderID' });
 db.product.hasMany(db.order_item, { foreignKey: 'productID' });
 db.user_address.hasMany(db.order, { foreignKey: 'address_id' });
+
+db.user.hasMany(db.wishlist, { foreignKey: 'user_id' });
+db.product.hasMany(db.wishlist, { foreignKey: 'product_id' });
 
 export default db;
