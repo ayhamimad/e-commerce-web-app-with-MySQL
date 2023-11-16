@@ -53,7 +53,7 @@ var getUserInfo = function (req, res) { return __awaiter(void 0, void 0, void 0,
             case 1:
                 userInfo = _a.sent();
                 if (!userInfo) {
-                    return [2 /*return*/, res.status(404).json({ message: "User not found" })];
+                    return [2 /*return*/, res.status(200).json({ message: "User not found" })];
                 }
                 return [2 /*return*/, res.status(200).json(userInfo)];
             case 2:
@@ -78,7 +78,7 @@ var updateUserInfo = function (req, res) { return __awaiter(void 0, void 0, void
             case 1:
                 userInfo = _b.sent();
                 if (!userInfo) {
-                    return [2 /*return*/, res.status(404).json({ message: "User not found" })];
+                    return [2 /*return*/, res.status(200).json({ message: "User not found" })];
                 }
                 originalUserInfo = {
                     first_name: userInfo.first_name,
@@ -129,7 +129,7 @@ var updatePassword = function (req, res) { return __awaiter(void 0, void 0, void
             case 1:
                 userInfo = _b.sent();
                 if (!userInfo) {
-                    return [2 /*return*/, res.status(404).json({ message: "User not Found" })];
+                    return [2 /*return*/, res.status(200).json({ message: "User not Found" })];
                 }
                 if (!(0, bcrypt_1.compareSync)(currentPassword, userInfo.password)) return [3 /*break*/, 3];
                 newHashedPassword = (0, bcrypt_1.hashSync)(newPassword, 10);

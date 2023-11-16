@@ -254,7 +254,7 @@ var getInProgress = function (req, res) { return __awaiter(void 0, void 0, void 
             case 1:
                 order = _b.sent();
                 if (!order) {
-                    return [2 /*return*/, res.status(404).send("No orders found")];
+                    return [2 /*return*/, res.status(200).send({ message: "No orders found!", data: order })];
                 }
                 return [4 /*yield*/, OrderItem.findAll({
                         where: {
@@ -349,7 +349,7 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, Product.findByPk(items[i].productID)];
             case 4:
                 product = _a.sent();
-                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url });
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description });
                 itemsWithImage.push(itemWithImage);
                 _a.label = 5;
             case 5:
