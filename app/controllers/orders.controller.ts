@@ -194,7 +194,7 @@ export const getInProgress =async (req:Request, res: Response) => {
       }
     });
     if(!order){
-      return res.status(404).send("No orders found");
+      return res.status(200).send({message:"No orders found!",data:order});
     }
     
     let items = await OrderItem.findAll({
@@ -260,7 +260,9 @@ export const getOrderDetails = async (req: Request, res:Response)=>{
       let product = await Product.findByPk(items[i].productID);
       let itemWithImage = {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
-        image: product.image_url
+        image: product.image_url,
+        name: product.name,
+        sub_title: product.short_description
         };
       itemsWithImage.push(itemWithImage);
     }

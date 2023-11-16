@@ -24,7 +24,7 @@ export const addProductToWishlist = async (req: Request, res: Response) => {
     });
     if (existingItemInWishList) {
       return res
-        .status(201)
+        .status(200)
         .json({ message: "This item has been added to your wishlist before" });
     } else {
       const newWishListItem = {
@@ -32,7 +32,7 @@ export const addProductToWishlist = async (req: Request, res: Response) => {
         product_id: productId,
       };
       const createdWishlistItem = await Wishlist.create(newWishListItem);
-      return res.status(201).json({
+      return res.status(200).json({
         message: "the product added to the wishlist successfully",
         createdWishlistItem,
       });
@@ -56,7 +56,7 @@ export const getWishlistProducts = async (req: Request, res: Response) => {
       });
   
       if (!wishlistItems || wishlistItems.length === 0) {
-        return res.status(404).json({ message: "No items in your wishlist yet." });
+        return res.status(200).json({ message: "No items in your wishlist yet." });
       }
   
       const products = wishlistItems.map((wishlistItem: typeof Wishlist) => wishlistItem.product);
