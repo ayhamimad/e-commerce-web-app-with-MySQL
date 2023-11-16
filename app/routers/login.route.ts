@@ -23,7 +23,7 @@ router.post('/', (req, res, next) => {
 
     // Authentication successful, generate a JWT token
     const token = jwt.sign({ id: user.id }, 'top-secret', { expiresIn: '1h' });
-    return res.json({ token:"Bearer "+token });
+    return res.json({ token:"Bearer " + token });
   })(req, res, next);
 });
 

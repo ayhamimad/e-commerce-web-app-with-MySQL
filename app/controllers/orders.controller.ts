@@ -209,7 +209,9 @@ export const getInProgress =async (req:Request, res: Response) => {
       let product = await Product.findByPk(items[i].productID);
       let itemWithImage = {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
-        image: product.image_url
+        image: product.image_url,
+        name: product.name,
+        sub_title: product.short_description
       };
       let totalItemDiscount = items[i].quantity * product.price * product.discount/100;
       totalDiscount = totalDiscount + totalItemDiscount;
@@ -218,12 +220,56 @@ export const getInProgress =async (req:Request, res: Response) => {
       return res.status(200).json({
         data: itemsWithImage,
         total_price: order.total_price,
-        total_discount: totalDiscount
+        total_discount: totalDiscount,
+        orderId: order.id
         })
   }catch(err){
     console.log(err);
     res.status(500).send("Server Error");
   }
 }
-     
+export const getUserOrders = async (req: Request, res:Response)=>{
+  try{
+    const user = req.user as typeof User;
+    const orders = await Order.findAll({
+      where: {
+        user_id: user.id
+      }
+    });
+    return res.status(200).json({data:orders});
+  }catch{
+    res.status(500).send('server error');
+  }
+}
 
+export const getOrderDetails = async (req: Request, res:Response)=>{
+  try{
+    const id = parseInt(req.params.id)
+    const order = await Order.findOne({where:{id}});
+    if(!order){
+      throw new Error();
+      }
+    const items = await OrderItem.findAll({
+      include:[Product],
+      where:{
+        order_id: order.id
+        }
+    });
+    const itemsWithImage = [];
+    for(let i=0;i<items.length;i++){
+      let product = await Product.findByPk(items[i].productID);
+      let itemWithImage = {
+        ...items[i].toJSON(), // Copy existing properties from OrderItem
+        image: product.image_url
+        };
+      itemsWithImage.push(itemWithImage);
+    }
+    return res.status(200).json({data:itemsWithImage})
+  }catch(err){
+    console.log(err);
+    res.status(404).send('Not Found')
+  }
+                
+
+}
+     
