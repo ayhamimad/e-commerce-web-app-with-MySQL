@@ -11,6 +11,7 @@ var address_route_1 = require("./app/routers/address.route");
 var brand_route_1 = require("./app/routers/brand.route");
 var category_route_1 = require("./app/routers/category.route");
 var signup_route_1 = require("./app/routers/signup.route");
+var wishlist_route_1 = require("./app/routers/wishlist.route");
 // const app:Application=require("../dist/server");
 var passport = require('passport'); // Import Passport.js
 require("./app/config/passport.config");
@@ -29,6 +30,7 @@ app.use('/api/v1/addresses', address_route_1.default);
 app.use('/api/v1/brands', brand_route_1.default);
 app.use('/api/v1/categories', category_route_1.default);
 app.use('/api/v1/signup', signup_route_1.default);
+app.use('/api/v1/wishlist', wishlist_route_1.default);
 var Port = process.env.PORT || 3000;
 app.listen(Port, function () {
     console.log("Server is running on ".concat(Port));
