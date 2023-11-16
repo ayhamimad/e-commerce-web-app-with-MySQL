@@ -272,7 +272,7 @@ var getInProgress = function (req, res) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, Product.findByPk(items[i].productID)];
             case 4:
                 product = _b.sent();
-                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url });
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description });
                 totalItemDiscount = items[i].quantity * product.price * product.discount / 100;
                 totalDiscount = totalDiscount + totalItemDiscount;
                 itemsWithImage.push(itemWithImage);
@@ -283,7 +283,8 @@ var getInProgress = function (req, res) { return __awaiter(void 0, void 0, void 
             case 6: return [2 /*return*/, res.status(200).json({
                     data: itemsWithImage,
                     total_price: order.total_price,
-                    total_discount: totalDiscount
+                    total_discount: totalDiscount,
+                    orderId: order.id
                 })];
             case 7:
                 err_1 = _b.sent();
