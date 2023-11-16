@@ -10,6 +10,7 @@ var products_model_1 = require("./products.model");
 var reviews_model_1 = require("./reviews.model");
 var user_model_1 = require("./user.model");
 var userAddress_model_1 = require("./userAddress.model");
+var wishlist_model_1 = require("./wishlist.model");
 //initializes a new Sequelize instance connecting to a database using the configuration parameters stored in the bookConfig object
 var sequelize = new sequelize_1.Sequelize(db_config_1.dbConfig.DB, db_config_1.dbConfig.USER, db_config_1.dbConfig.PASSWORD, {
     host: db_config_1.dbConfig.HOST,
@@ -35,6 +36,7 @@ db.product = (0, products_model_1.default)(sequelize);
 db.review = (0, reviews_model_1.default)(sequelize);
 db.user = (0, user_model_1.default)(sequelize);
 db.user_address = (0, userAddress_model_1.default)(sequelize);
+db.wishlist = (0, wishlist_model_1.default)(sequelize);
 db.product.belongsTo(db.brand, { foreignKey: 'brandID' });
 db.product.belongsTo(db.category, { foreignKey: 'categoryID' });
 db.user.hasMany(db.review, { foreignKey: 'user_id' });
@@ -44,4 +46,6 @@ db.user.hasMany(db.user_address, { foreignKey: 'user_id' });
 db.order.hasMany(db.order_item, { foreignKey: 'orderID' });
 db.product.hasMany(db.order_item, { foreignKey: 'productID' });
 db.user_address.hasMany(db.order, { foreignKey: 'address_id' });
+db.user.hasMany(db.wishlist, { foreignKey: 'user_id' });
+db.product.hasMany(db.wishlist, { foreignKey: 'product_id' });
 exports.default = db;

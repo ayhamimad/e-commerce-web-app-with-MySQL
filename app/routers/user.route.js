@@ -6,5 +6,5 @@ var router = express.Router();
 var userPageController = require("../controllers/user.controller");
 router.get('/me', passport.authenticate('jwt', { session: false }), userPageController.getUserInfo);
 router.put('/', passport.authenticate('jwt', { session: false }), userPageController.updateUserInfo);
-router.post('/password', passport.authenticate('jwt', { session: false }), userPageController.updatePassword);
+router.post('/me/change_password', passport.authenticate('jwt', { session: false }), userPageController.updatePassword);
 exports.default = router;
