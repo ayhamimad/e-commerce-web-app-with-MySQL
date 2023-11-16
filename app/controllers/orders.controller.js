@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInProgress = exports.deleteOrderItem = exports.changeOrderStatusAndPutAddress = void 0;
+exports.getOrderDetails = exports.getUserOrders = exports.getInProgress = exports.deleteOrderItem = exports.changeOrderStatusAndPutAddress = void 0;
 var models_1 = require("../models");
 var jwt = require("jsonwebtoken");
 var Order = models_1.default.order;
@@ -295,3 +295,73 @@ var getInProgress = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.getInProgress = getInProgress;
+var getUserOrders = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, orders, _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                user = req.user;
+                return [4 /*yield*/, Order.findAll({
+                        where: {
+                            user_id: user.id
+                        }
+                    })];
+            case 1:
+                orders = _b.sent();
+                return [2 /*return*/, res.status(200).json({ data: orders })];
+            case 2:
+                _a = _b.sent();
+                res.status(500).send('server error');
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getUserOrders = getUserOrders;
+var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var id, order, items, itemsWithImage, i, product, itemWithImage, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 7, , 8]);
+                id = parseInt(req.params.id);
+                return [4 /*yield*/, Order.findOne({ where: { id: id } })];
+            case 1:
+                order = _a.sent();
+                if (!order) {
+                    throw new Error();
+                }
+                return [4 /*yield*/, OrderItem.findAll({
+                        include: [Product],
+                        where: {
+                            order_id: order.id
+                        }
+                    })];
+            case 2:
+                items = _a.sent();
+                itemsWithImage = [];
+                i = 0;
+                _a.label = 3;
+            case 3:
+                if (!(i < items.length)) return [3 /*break*/, 6];
+                return [4 /*yield*/, Product.findByPk(items[i].productID)];
+            case 4:
+                product = _a.sent();
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url });
+                itemsWithImage.push(itemWithImage);
+                _a.label = 5;
+            case 5:
+                i++;
+                return [3 /*break*/, 3];
+            case 6: return [2 /*return*/, res.status(200).json({ data: itemsWithImage })];
+            case 7:
+                err_2 = _a.sent();
+                console.log(err_2);
+                res.status(404).send('Not Found');
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getOrderDetails = getOrderDetails;

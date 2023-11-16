@@ -50,4 +50,33 @@ passport.use(
     }
   )
 );
+passport.use(
+  'local-signup',
+  new LocalStrategy(
+    { usernameField: 'email', passwordField: 'password', passReqToCallback: true },
+    async (req, email, password, done) => {
+      try {
+        const existingUser = await User.findOne({ where: { email: email } });
+
+        if (existingUser) {
+          return done(null, false, { message: 'That email is already taken.' });
+        }
+
+        const { first_name, last_name, phone_number } = req.body;
+
+        const newUser = new User();
+        newUser.email = email;
+        newUser.password = await bcrypt.hash(password, 10); // Hash the password
+        newUser.first_name = first_name;
+        newUser.last_name = last_name;
+        newUser.phone_number = phone_number;
+        await newUser.save();
+
+        return done(null, newUser);
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
 export default passport;
