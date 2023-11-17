@@ -80,8 +80,6 @@ var changeOrderStatusAndPutAddress = function (req, res) { return __awaiter(void
                     order.status = "paid";
                 }
                 if (!(orderItems && Array.isArray(orderItems))) return [3 /*break*/, 5];
-                // Update the order status to "placed"
-                order.status = "placed";
                 _loop_1 = function (incomingOrderItem) {
                     var existingOrderItem, product, quantityDifference, updatedStockQuantity, updatedTotalPrice;
                     return __generator(this, function (_c) {

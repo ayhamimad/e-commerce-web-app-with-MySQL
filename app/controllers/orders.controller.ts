@@ -35,7 +35,7 @@ export const changeOrderStatusAndPutAddress = async (req: Request,res: Response)
     // Check if orderItems is provided in the request body
     if (orderItems && Array.isArray(orderItems)) {
       // Update the order status to "placed"
-      order.status = "placed";
+      // order.status = "placed";
 
       // Update order item quantities and product stock quantities
       for (const incomingOrderItem of orderItems) {
