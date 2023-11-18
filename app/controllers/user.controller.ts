@@ -13,7 +13,7 @@ export const getUserInfo = async (req: Request, res: Response) => {
     });
 
     if (!userInfo) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(200).json({ message: "User not found" });
     }
 
     return res.status(200).json(userInfo);
@@ -32,7 +32,7 @@ export const updateUserInfo = async (req: Request, res: Response) => {
       const userInfo = await User.findByPk(user.id);
   
       if (!userInfo) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(200).json({ message: "User not found" });
       }
       const originalUserInfo = {      
         first_name: userInfo.first_name,
@@ -73,7 +73,7 @@ export const updateUserInfo = async (req: Request, res: Response) => {
 
         const userInfo = await User.findByPk(user.id);
         if(!userInfo){
-            return res.status(404).json({message:"User not Found"});
+            return res.status(200).json({message:"User not Found"});
         }
         
         if (compareSync(currentPassword, userInfo.password)) {

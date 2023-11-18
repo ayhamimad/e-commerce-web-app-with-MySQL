@@ -35,7 +35,7 @@ export const changeOrderStatusAndPutAddress = async (req: Request,res: Response)
     // Check if orderItems is provided in the request body
     if (orderItems && Array.isArray(orderItems)) {
       // Update the order status to "placed"
-      order.status = "placed";
+      // order.status = "placed";
 
       // Update order item quantities and product stock quantities
       for (const incomingOrderItem of orderItems) {
@@ -194,7 +194,7 @@ export const getInProgress =async (req:Request, res: Response) => {
       }
     });
     if(!order){
-      return res.status(404).send("No orders found");
+      return res.status(200).send({message:"No orders found!",data:order});
     }
     
     let items = await OrderItem.findAll({
@@ -273,6 +273,8 @@ export const getOrderDetails = async (req: Request, res: Response) => {
       let itemWithImage = {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
         image: product.image_url,
+        name: product.name,
+        sub_title: product.short_description,
       };
       itemsWithImage.push(itemWithImage);
     }

@@ -66,7 +66,7 @@ var addProductToWishlist = function (req, res) { return __awaiter(void 0, void 0
                 existingItemInWishList = _b.sent();
                 if (!existingItemInWishList) return [3 /*break*/, 3];
                 return [2 /*return*/, res
-                        .status(201)
+                        .status(200)
                         .json({ message: "This item has been added to your wishlist before" })];
             case 3:
                 newWishListItem = {
@@ -76,7 +76,7 @@ var addProductToWishlist = function (req, res) { return __awaiter(void 0, void 0
                 return [4 /*yield*/, Wishlist.create(newWishListItem)];
             case 4:
                 createdWishlistItem = _b.sent();
-                return [2 /*return*/, res.status(201).json({
+                return [2 /*return*/, res.status(200).json({
                         message: "the product added to the wishlist successfully",
                         createdWishlistItem: createdWishlistItem,
                     })];
@@ -109,7 +109,7 @@ var getWishlistProducts = function (req, res) { return __awaiter(void 0, void 0,
             case 1:
                 wishlistItems = _a.sent();
                 if (!wishlistItems || wishlistItems.length === 0) {
-                    return [2 /*return*/, res.status(404).json({ message: "No items in your wishlist yet." })];
+                    return [2 /*return*/, res.status(200).json({ message: "No items in your wishlist yet." })];
                 }
                 products = wishlistItems.map(function (wishlistItem) { return wishlistItem.product; });
                 return [2 /*return*/, res.status(200).json({ products: products })];
