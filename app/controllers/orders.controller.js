@@ -270,7 +270,7 @@ var getInProgress = function (req, res) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, Product.findByPk(items[i].productID)];
             case 4:
                 product = _b.sent();
-                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description });
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description, product_price: product.price });
                 totalItemDiscount = items[i].quantity * product.price * product.discount / 100;
                 totalDiscount = totalDiscount + totalItemDiscount;
                 itemsWithImage.push(itemWithImage);
@@ -329,13 +329,13 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
             case 1:
                 order = _a.sent();
                 if (!order) {
-                    throw new Error();
+                    return [2 /*return*/, res.status(404).json({ error: 'Order not found' })];
                 }
                 return [4 /*yield*/, OrderItem.findAll({
                         include: [Product],
                         where: {
-                            order_id: order.id
-                        }
+                            orderID: order.id,
+                        },
                     })];
             case 2:
                 items = _a.sent();
@@ -347,6 +347,11 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
                 return [4 /*yield*/, Product.findByPk(items[i].productID)];
             case 4:
                 product = _a.sent();
+                if (!product) {
+                    // Handle the case where the associated product is not found
+                    console.error("Product not found for OrderItem with ID ".concat(items[i].id));
+                    return [3 /*break*/, 5]; // Skip to the next iteration of the loop
+                }
                 itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description });
                 itemsWithImage.push(itemWithImage);
                 _a.label = 5;
@@ -356,9 +361,8 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
             case 6: return [2 /*return*/, res.status(200).json({ data: itemsWithImage })];
             case 7:
                 err_2 = _a.sent();
-                console.log(err_2);
-                res.status(404).send('Not Found');
-                return [3 /*break*/, 8];
+                console.error(err_2);
+                return [2 /*return*/, res.status(500).json({ error: 'Internal Server Error' })];
             case 8: return [2 /*return*/];
         }
     });

@@ -211,7 +211,8 @@ export const getInProgress =async (req:Request, res: Response) => {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
         image: product.image_url,
         name: product.name,
-        sub_title: product.short_description
+        sub_title: product.short_description,
+        product_price: product.price
       };
       let totalItemDiscount = items[i].quantity * product.price * product.discount/100;
       totalDiscount = totalDiscount + totalItemDiscount;
@@ -242,36 +243,45 @@ export const getUserOrders = async (req: Request, res:Response)=>{
   }
 }
 
-export const getOrderDetails = async (req: Request, res:Response)=>{
-  try{
-    const id = parseInt(req.params.id)
-    const order = await Order.findOne({where:{id}});
-    if(!order){
-      throw new Error();
-      }
+export const getOrderDetails = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    const order = await Order.findOne({ where: { id: id } });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
     const items = await OrderItem.findAll({
-      include:[Product],
-      where:{
-        order_id: order.id
-        }
+      include: [Product],
+      where: {
+        orderID: order.id,
+      },
     });
+
     const itemsWithImage = [];
-    for(let i=0;i<items.length;i++){
+
+    for (let i = 0; i < items.length; i++) {
       let product = await Product.findByPk(items[i].productID);
+
+      if (!product) {
+        // Handle the case where the associated product is not found
+        console.error(`Product not found for OrderItem with ID ${items[i].id}`);
+        continue; // Skip to the next iteration of the loop
+      }
+
       let itemWithImage = {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
         image: product.image_url,
         name: product.name,
-        sub_title: product.short_description
-        };
+        sub_title: product.short_description,
+      };
       itemsWithImage.push(itemWithImage);
     }
-    return res.status(200).json({data:itemsWithImage})
-  }catch(err){
-    console.log(err);
-    res.status(404).send('Not Found')
-  }
-                
 
-}
-     
+    return res.status(200).json({ data: itemsWithImage });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

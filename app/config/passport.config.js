@@ -76,6 +76,9 @@ passport.use(new passport_local_1.Strategy({ usernameField: 'email', passwordFie
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
+                if (!email || !password) {
+                    return [2 /*return*/, done(null, false, { message: 'Email and password are required in the request body.' })];
+                }
                 return [4 /*yield*/, User.findOne({ where: { email: email } })];
             case 1:
                 user = _a.sent();
@@ -102,6 +105,14 @@ passport.use('local-signup', new passport_local_1.Strategy({ usernameField: 'ema
         switch (_c.label) {
             case 0:
                 _c.trys.push([0, 4, , 5]);
+                if (!req.body.email || !req.body.password) {
+                    // Check if email and password are present in the request body
+                    return [2 /*return*/, done(null, false, { message: 'Email and password are required in the request body.' })];
+                }
+                // Check if email and password are not provided in the params
+                if (req.params.email || req.params.password) {
+                    return [2 /*return*/, done(null, false, { message: 'Credentials should not be provided in the params.' })];
+                }
                 return [4 /*yield*/, User.findOne({ where: { email: email } })];
             case 1:
                 existingUser = _c.sent();
