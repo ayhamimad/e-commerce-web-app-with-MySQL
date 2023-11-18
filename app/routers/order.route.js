@@ -9,5 +9,5 @@ router.put('/:orderId', passport.authenticate('jwt', { session: false }), orders
 router.delete('/order_items/:orderItemId', passport.authenticate('jwt', { session: false }), ordersController.deleteOrderItem);
 router.get('/in_progress', passport.authenticate('jwt', { session: false }), ordersController.getInProgress);
 router.get('/', passport.authenticate('jwt', { session: false }), ordersController.getUserOrders);
-router.get('/:orderid/orderitems', passport.authenticate('jwt', { session: false }), ordersController.getOrderDetails);
+router.get('/:id/orderitems', passport.authenticate('jwt', { session: false }), ordersController.getOrderDetails);
 exports.default = router;

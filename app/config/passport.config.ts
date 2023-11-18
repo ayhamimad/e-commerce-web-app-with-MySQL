@@ -30,7 +30,9 @@ passport.use(
     { usernameField: 'email', passwordField: 'password' },
     async (email, password, done) => {
       try {
-         
+        if (!email || !password) {
+          return done(null, false, { message: 'Email and password are required in the request body.' });
+        }
         const user = await User.findOne({ where: { email: email } });
 
         if (!user) {
@@ -56,6 +58,15 @@ passport.use(
     { usernameField: 'email', passwordField: 'password', passReqToCallback: true },
     async (req, email, password, done) => {
       try {
+        if (!req.body.email || !req.body.password) {
+          // Check if email and password are present in the request body
+          return done(null, false, { message: 'Email and password are required in the request body.' });
+        }
+        
+        // Check if email and password are not provided in the params
+        if (req.params.email || req.params.password) {
+          return done(null, false, { message: 'Credentials should not be provided in the params.' });
+        }
         const existingUser = await User.findOne({ where: { email: email } });
 
         if (existingUser) {
