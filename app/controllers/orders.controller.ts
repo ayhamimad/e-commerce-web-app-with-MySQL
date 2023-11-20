@@ -275,9 +275,7 @@ export const getOrderDetails = async (req: Request, res: Response) => {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
         image: product.image_url,
         name: product.name,
-        sub_title: product.short_description,
-        total_price: order.total_price,
-        totalDiscount: totalDiscount
+        sub_title: product.short_description
       };
       itemsWithImage.push(itemWithImage);
     }
@@ -289,7 +287,12 @@ export const getOrderDetails = async (req: Request, res: Response) => {
     return res.status(200).json({ data: itemsWithImage,
       city: address.city,
       state: address.state,
-      street: address.street
+      street: address.street,
+      phone_number: address.phone_number,
+      first_name:address.first_name,
+      last_name: address.last_name,
+      total_price: order.total_price,
+      totalDiscount: totalDiscount
      });
   } catch (err) {
     console.error(err);

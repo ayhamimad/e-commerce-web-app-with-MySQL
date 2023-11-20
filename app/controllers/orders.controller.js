@@ -356,7 +356,7 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
                 }
                 totalItemDiscount = items[i].quantity * product.price * product.discount / 100;
                 totalDiscount = totalDiscount + totalItemDiscount;
-                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description, total_price: order.total_price, totalDiscount: totalDiscount });
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description });
                 itemsWithImage.push(itemWithImage);
                 _a.label = 5;
             case 5:
@@ -372,7 +372,12 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
                 return [2 /*return*/, res.status(200).json({ data: itemsWithImage,
                         city: address.city,
                         state: address.state,
-                        street: address.street
+                        street: address.street,
+                        phone_number: address.phone_number,
+                        first_name: address.first_name,
+                        last_name: address.last_name,
+                        total_price: order.total_price,
+                        totalDiscount: totalDiscount
                     })];
             case 8:
                 err_2 = _a.sent();
