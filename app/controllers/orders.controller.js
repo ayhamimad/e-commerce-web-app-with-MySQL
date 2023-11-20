@@ -377,7 +377,7 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
                         first_name: address.first_name,
                         last_name: address.last_name,
                         total_price: order.total_price,
-                        totalDiscount: totalDiscount
+                        total_discount: totalDiscount
                     })];
             case 8:
                 err_2 = _a.sent();
