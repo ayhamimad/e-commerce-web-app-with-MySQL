@@ -292,7 +292,7 @@ export const getOrderDetails = async (req: Request, res: Response) => {
       first_name:address.first_name,
       last_name: address.last_name,
       total_price: order.total_price,
-      totalDiscount: totalDiscount
+      total_discount: totalDiscount
      });
   } catch (err) {
     console.error(err);
