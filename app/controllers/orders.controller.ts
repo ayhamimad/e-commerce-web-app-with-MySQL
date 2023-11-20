@@ -6,7 +6,7 @@ const Order = db.order;
 const User = db.user;
 const OrderItem = db.order_item;
 const Product = db.product;
-
+const Address = db.user_address;
 export const changeOrderStatusAndPutAddress = async (req: Request,res: Response) => {
   try {
     const user = req.user as typeof User;
@@ -260,7 +260,7 @@ export const getOrderDetails = async (req: Request, res: Response) => {
     });
 
     const itemsWithImage = [];
-
+    var totalDiscount = 0;
     for (let i = 0; i < items.length; i++) {
       let product = await Product.findByPk(items[i].productID);
 
@@ -269,17 +269,28 @@ export const getOrderDetails = async (req: Request, res: Response) => {
         console.error(`Product not found for OrderItem with ID ${items[i].id}`);
         continue; // Skip to the next iteration of the loop
       }
-
+      let totalItemDiscount = items[i].quantity * product.price * product.discount/100;
+      totalDiscount = totalDiscount + totalItemDiscount;
       let itemWithImage = {
         ...items[i].toJSON(), // Copy existing properties from OrderItem
         image: product.image_url,
         name: product.name,
         sub_title: product.short_description,
+        total_price: order.total_price,
+        totalDiscount: totalDiscount
       };
       itemsWithImage.push(itemWithImage);
     }
-
-    return res.status(200).json({ data: itemsWithImage });
+    const address = await Address.findOne({
+      where: {
+        id: order.address_id
+      }
+    })
+    return res.status(200).json({ data: itemsWithImage,
+      city: address.city,
+      state: address.state,
+      street: address.street
+     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Internal Server Error' });

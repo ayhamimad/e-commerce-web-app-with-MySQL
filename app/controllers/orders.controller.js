@@ -54,6 +54,7 @@ var Order = models_1.default.order;
 var User = models_1.default.user;
 var OrderItem = models_1.default.order_item;
 var Product = models_1.default.product;
+var Address = models_1.default.user_address;
 var changeOrderStatusAndPutAddress = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var user, orderId, _a, addressId, orderItems, order, _loop_1, _i, orderItems_1, incomingOrderItem, error_1;
     return __generator(this, function (_b) {
@@ -319,11 +320,11 @@ var getUserOrders = function (req, res) { return __awaiter(void 0, void 0, void 
 }); };
 exports.getUserOrders = getUserOrders;
 var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, order, items, itemsWithImage, i, product, itemWithImage, err_2;
+    var id, order, items, itemsWithImage, totalDiscount, i, product, totalItemDiscount, itemWithImage, address, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 7, , 8]);
+                _a.trys.push([0, 8, , 9]);
                 id = parseInt(req.params.id);
                 return [4 /*yield*/, Order.findOne({ where: { id: id } })];
             case 1:
@@ -340,6 +341,7 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
             case 2:
                 items = _a.sent();
                 itemsWithImage = [];
+                totalDiscount = 0;
                 i = 0;
                 _a.label = 3;
             case 3:
@@ -352,18 +354,31 @@ var getOrderDetails = function (req, res) { return __awaiter(void 0, void 0, voi
                     console.error("Product not found for OrderItem with ID ".concat(items[i].id));
                     return [3 /*break*/, 5]; // Skip to the next iteration of the loop
                 }
-                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description });
+                totalItemDiscount = items[i].quantity * product.price * product.discount / 100;
+                totalDiscount = totalDiscount + totalItemDiscount;
+                itemWithImage = __assign(__assign({}, items[i].toJSON()), { image: product.image_url, name: product.name, sub_title: product.short_description, total_price: order.total_price, totalDiscount: totalDiscount });
                 itemsWithImage.push(itemWithImage);
                 _a.label = 5;
             case 5:
                 i++;
                 return [3 /*break*/, 3];
-            case 6: return [2 /*return*/, res.status(200).json({ data: itemsWithImage })];
+            case 6: return [4 /*yield*/, Address.findOne({
+                    where: {
+                        id: order.address_id
+                    }
+                })];
             case 7:
+                address = _a.sent();
+                return [2 /*return*/, res.status(200).json({ data: itemsWithImage,
+                        city: address.city,
+                        state: address.state,
+                        street: address.street
+                    })];
+            case 8:
                 err_2 = _a.sent();
                 console.error(err_2);
                 return [2 /*return*/, res.status(500).json({ error: 'Internal Server Error' })];
-            case 8: return [2 /*return*/];
+            case 9: return [2 /*return*/];
         }
     });
 }); };
