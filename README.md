@@ -54,7 +54,7 @@ The backend of COR'AL is built with the following technologies:
 
 Here is the schema diagram for COR'AL:
 
-![COR'AL Schema Diagram](https://drive.google.com/uc?12BJI2rTUN5dhShVx9TdYzedpI9GOsgh1)
+![COR'AL Schema Diagram](https://drive.google.com/uc?id=12BJI2rTUN5dhShVx9TdYzedpI9GOsgh1)
 
 ## API Documentation
 
