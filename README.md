@@ -8,7 +8,7 @@ COR'AL is a Progressive Web Application (PWA) designed for a general store that 
 - [Features](#features)
 - [Installation](#installation)
 - [Backend Technologies](#backend-technologies)
-- [Schema Diagram](#schema-digram)
+- [Schema Diagram](#schema-diagram)
 - [API Documentation](#api-documentation)
 
 
