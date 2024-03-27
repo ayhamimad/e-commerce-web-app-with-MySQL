@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.dbConfig = void 0;
 exports.dbConfig = {
     HOST: "sql.freedb.tech",
-    USER: "freedb_backend-final-3",
-    PASSWORD: "*NgvyAs9f#Dnyd&",
-    DB: "freedb_coral_ecommerce",
+    USER: "freedb_backend-final3",
+    PASSWORD: "7*fnAaZ4!YMXMAZ",
+    DB: "freedb_coral_e-commerce",
     DIALECT: "mysql",
     pool: {
         max: 5,
