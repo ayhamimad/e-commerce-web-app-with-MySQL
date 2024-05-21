@@ -59,3 +59,7 @@ Here is the schema diagram for COR'AL:
 ## API Documentation
 
 For details on how to interact with the RESTful API, please refer to the [API Documentation](https://docs.google.com/spreadsheets/d/15RHpJ57RSXnE50WSGPuvu0WFkrLaAGpZSc-m_4ps20g/edit?usp=sharing).
+
+## the link to the Web site
+
+https://jsd-0923.github.io/frontend-final-3/
